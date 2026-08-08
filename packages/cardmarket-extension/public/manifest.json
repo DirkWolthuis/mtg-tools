@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Cardmarket Wishlist Overlap",
+  "version": "0.0.1",
+  "description": "Shows how many of a Cardmarket seller's offers overlap with your wishlist, and compares their cheapest printing to a reference cheapest price.",
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.cardmarket.com/*/Magic/Users/*/Offers/Singles*"],
+      "js": ["content-scripts/seller-offers.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://www.cardmarket.com/*",
+    "https://api.scryfall.com/*"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@org/cardmarket-extension",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "nx": {
+    "name": "cardmarket-extension"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/chrome": "^0.0.323",
+    "jsdom": "^25.0.1"
+  }
+}
