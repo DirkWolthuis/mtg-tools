@@ -12,21 +12,39 @@ function buildDocument(tableHtml: string): Document {
   );
 }
 
+function buildOffersTableHtml(): string {
+  return `
+    <div class="article-table">
+      <div class="table-header d-none d-lg-flex">
+        <div class="row g-0 flex-nowrap">
+          <div class="col-sellerProductInfo col">Name</div>
+          <div class="col-offer col-auto">Offer</div>
+        </div>
+      </div>
+      <div class="table-body">
+        <div class="row g-0 article-row">
+          <div class="col-sellerProductInfo col">Llanowar Elves</div>
+          <div class="col-offer col-auto">0,20 &euro;</div>
+        </div>
+        <div class="row g-0 article-row">
+          <div class="col-sellerProductInfo col">Counterspell</div>
+          <div class="col-offer col-auto">3,00 &euro;</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 describe('findOffersTable', () => {
-  it('finds a table that has body rows', () => {
-    const doc = buildDocument(`
-      <table class="table">
-        <thead><tr><th>Product</th><th>Price</th></tr></thead>
-        <tbody><tr><td>Llanowar Elves</td><td>0.20 &euro;</td></tr></tbody>
-      </table>
-    `);
+  it('finds the offers grid that has article rows', () => {
+    const doc = buildDocument(buildOffersTableHtml());
 
     expect(findOffersTable(doc)).not.toBeNull();
   });
 
-  it('returns null when no table has body rows', () => {
+  it('returns null when no element has article rows', () => {
     const doc = buildDocument(
-      `<table class="table"><thead><tr><th>Product</th></tr></thead></table>`,
+      `<div class="article-table"><div class="table-header"><div class="row"><div class="col">Name</div></div></div></div>`,
     );
 
     expect(findOffersTable(doc)).toBeNull();
@@ -35,44 +53,36 @@ describe('findOffersTable', () => {
 
 describe('addAveragePriceColumn', () => {
   it('appends a header cell and one body cell per row', () => {
-    const doc = buildDocument(`
-      <table class="table">
-        <thead><tr><th>Product</th><th>Price</th></tr></thead>
-        <tbody>
-          <tr><td>Llanowar Elves</td><td>0.20 &euro;</td></tr>
-          <tr><td>Counterspell</td><td>3.00 &euro;</td></tr>
-        </tbody>
-      </table>
-    `);
+    const doc = buildDocument(buildOffersTableHtml());
     const table = findOffersTable(doc);
     if (!table) throw new Error('expected to find the offers table');
 
     addAveragePriceColumn(table);
 
-    const headerCells = table.querySelectorAll('thead tr th');
-    const bodyRows = table.querySelectorAll('tbody tr');
+    const headerCells = table.querySelectorAll('.table-header .row > div');
+    const rows = table.querySelectorAll('.table-body .article-row');
 
     expect(headerCells).toHaveLength(3);
     expect(headerCells[2].textContent).toBe('Avg. Price');
-    expect(bodyRows[0].querySelectorAll('td')).toHaveLength(3);
-    expect(bodyRows[1].querySelectorAll('td')).toHaveLength(3);
+    expect(
+      rows[0].querySelectorAll(`.${AVERAGE_PRICE_COLUMN_CLASS}`),
+    ).toHaveLength(1);
+    expect(
+      rows[1].querySelectorAll(`.${AVERAGE_PRICE_COLUMN_CLASS}`),
+    ).toHaveLength(1);
   });
 
   it('does not add a duplicate column when called twice', () => {
-    const doc = buildDocument(`
-      <table class="table">
-        <thead><tr><th>Product</th></tr></thead>
-        <tbody><tr><td>Llanowar Elves</td></tr></tbody>
-      </table>
-    `);
+    const doc = buildDocument(buildOffersTableHtml());
     const table = findOffersTable(doc);
     if (!table) throw new Error('expected to find the offers table');
 
     addAveragePriceColumn(table);
     addAveragePriceColumn(table);
 
+    // 1 header cell + 2 body cells (one per article row in the fixture)
     expect(
       table.querySelectorAll(`.${AVERAGE_PRICE_COLUMN_CLASS}`),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
   });
 });
