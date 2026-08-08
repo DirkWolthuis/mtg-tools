@@ -7,7 +7,7 @@
     "emitDeclarationOnly": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["es2022", "dom", "dom.iterable"],
-    "types": ["chrome", "vite/client"]
+    "types": ["vite/client"]
   },
   "include": ["src/**/*.ts"],
   "references": [],

@@ -8,7 +8,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/chrome": "^0.0.323",
     "jsdom": "^25.0.1"
   }
 }
