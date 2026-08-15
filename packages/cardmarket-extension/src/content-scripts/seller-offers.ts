@@ -1,9 +1,14 @@
-import { addAveragePriceColumn, findOffersTable } from '../lib/offers-table.js';
+import { findOffersTable } from '../lib/offers-table.js';
+import { parseOffers } from '../lib/parse-offers.js';
+import { renderOffersGrid } from '../lib/render-offers-grid.js';
 
-const LOG_PREFIX = '[cardmarket-avg-price]';
+const LOG_PREFIX = '[cardmarket-offers-grid]';
+const GRID_ROOT_ID = 'cardmarket-offers-grid-root';
 
 function run(): void {
   console.debug(LOG_PREFIX, 'content script injected on', window.location.href);
+
+  if (document.getElementById(GRID_ROOT_ID)) return; // already rendered
 
   const table = findOffersTable(document);
   if (!table) {
@@ -14,8 +19,14 @@ function run(): void {
     return;
   }
 
-  addAveragePriceColumn(table);
-  console.debug(LOG_PREFIX, 'average price column added');
+  const offers = parseOffers(table);
+
+  const gridRoot = document.createElement('div');
+  gridRoot.id = GRID_ROOT_ID;
+  table.replaceWith(gridRoot);
+
+  renderOffersGrid(gridRoot, offers);
+  console.debug(LOG_PREFIX, `rendered ${offers.length} offer(s)`);
 }
 
 run();

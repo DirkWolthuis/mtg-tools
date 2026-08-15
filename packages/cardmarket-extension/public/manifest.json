@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Cardmarket Average Price Column",
+  "name": "Cardmarket Offers Grid",
   "version": "0.0.1",
-  "description": "Adds an extra column to a Cardmarket user/vendor's offer table, to be filled with the average price per card.",
+  "description": "Replaces a Cardmarket seller's offers table with an image grid.",
   "content_scripts": [
     {
       "matches": ["https://www.cardmarket.com/*/Users/*"],

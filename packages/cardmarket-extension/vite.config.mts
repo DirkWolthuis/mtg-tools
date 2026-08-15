@@ -1,12 +1,15 @@
 /// <reference types='vitest' />
 import { defineConfig } from 'vite';
 import * as path from 'path';
+import preact from '@preact/preset-vite';
+import tailwindcss from '@tailwindcss/vite';
 
 // Chrome MV3 bundle: a single content script entry. manifest.json is static
 // and copied as-is from `public/` (Vite's default publicDir).
 export default defineConfig(() => ({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/packages/cardmarket-extension',
+  plugins: [preact(), tailwindcss()],
   build: {
     outDir: './dist',
     emptyOutDir: true,
@@ -31,6 +34,7 @@ export default defineConfig(() => ({
     watch: false,
     globals: true,
     environment: 'jsdom',
+    css: true, // needed so ?inline CSS imports get the real (Tailwind-compiled) output in tests
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {

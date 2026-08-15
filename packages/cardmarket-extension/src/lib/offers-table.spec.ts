@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  addAveragePriceColumn,
-  AVERAGE_PRICE_COLUMN_CLASS,
-  findOffersTable,
-} from './offers-table.js';
+import { findOffersTable } from './offers-table.js';
 
 function buildDocument(tableHtml: string): Document {
   return new DOMParser().parseFromString(
@@ -48,41 +44,5 @@ describe('findOffersTable', () => {
     );
 
     expect(findOffersTable(doc)).toBeNull();
-  });
-});
-
-describe('addAveragePriceColumn', () => {
-  it('appends a header cell and one body cell per row', () => {
-    const doc = buildDocument(buildOffersTableHtml());
-    const table = findOffersTable(doc);
-    if (!table) throw new Error('expected to find the offers table');
-
-    addAveragePriceColumn(table);
-
-    const headerCells = table.querySelectorAll('.table-header .row > div');
-    const rows = table.querySelectorAll('.table-body .article-row');
-
-    expect(headerCells).toHaveLength(3);
-    expect(headerCells[2].textContent).toBe('Avg. Price');
-    expect(
-      rows[0].querySelectorAll(`.${AVERAGE_PRICE_COLUMN_CLASS}`),
-    ).toHaveLength(1);
-    expect(
-      rows[1].querySelectorAll(`.${AVERAGE_PRICE_COLUMN_CLASS}`),
-    ).toHaveLength(1);
-  });
-
-  it('does not add a duplicate column when called twice', () => {
-    const doc = buildDocument(buildOffersTableHtml());
-    const table = findOffersTable(doc);
-    if (!table) throw new Error('expected to find the offers table');
-
-    addAveragePriceColumn(table);
-    addAveragePriceColumn(table);
-
-    // 1 header cell + 2 body cells (one per article row in the fixture)
-    expect(
-      table.querySelectorAll(`.${AVERAGE_PRICE_COLUMN_CLASS}`),
-    ).toHaveLength(3);
   });
 });

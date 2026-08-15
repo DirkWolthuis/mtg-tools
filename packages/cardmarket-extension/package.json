@@ -6,8 +6,19 @@
   "nx": {
     "name": "cardmarket-extension"
   },
-  "dependencies": {},
+  "scripts": {
+    "build": "tsc --build tsconfig.lib.json",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts"
+  },
+  "dependencies": {
+    "preact": "^10.29.8",
+    "vitest": "4.1.10"
+  },
   "devDependencies": {
-    "jsdom": "^25.0.1"
+    "@preact/preset-vite": "^2.10.6",
+    "@tailwindcss/vite": "^4.3.3",
+    "jsdom": "^25.0.1",
+    "tailwindcss": "^4.3.3"
   }
 }

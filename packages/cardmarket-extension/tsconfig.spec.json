@@ -4,7 +4,9 @@
     "outDir": "./out-tsc/vitest",
     "lib": ["es2022", "dom", "dom.iterable"],
     "types": ["vitest/globals", "vitest/importMeta", "vite/client", "vitest"],
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
   },
   "include": [
     "vite.config.ts",
