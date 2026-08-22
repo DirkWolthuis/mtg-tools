@@ -6,6 +6,26 @@ const IMAGE_SELECTOR = 'img[src], img[data-src], [data-image]';
 const THUMBNAIL_TOOLTIP_SELECTOR = '.col-thumbnail [data-bs-title]';
 // Not yet confirmed against a live page - update once real row markup is available.
 const QUANTITY_SELECTOR = '.item-count, .amount-container, [data-amount]';
+// Set, language and foil are all sprite icons (background-image + position); condition is a plain text badge.
+const PRODUCT_ATTRIBUTES_SELECTOR = '.product-attributes';
+const SET_LINK_SELECTOR = '.expansion-symbol';
+const CONDITION_SELECTOR = '.article-condition';
+const LANGUAGE_ICON_SELECTOR = '.icon.me-2';
+const FOIL_ICON_SELECTOR = '.st_SpecialIcon';
+
+/** A single sprite-sheet icon (set, language or foil), as rendered on Cardmarket via inline `background-image`/`background-position`. */
+export interface SpriteIcon {
+  imageUrl: string;
+  position: string;
+  width: string;
+  height: string;
+  label: string;
+}
+
+export interface Condition {
+  abbreviation: string;
+  label: string;
+}
 
 export interface Offer {
   name: string;
@@ -13,6 +33,10 @@ export interface Offer {
   priceText: string | null;
   imageUrl: string | null;
   quantity: string | null;
+  set: SpriteIcon | null;
+  language: SpriteIcon | null;
+  condition: Condition | null;
+  foil: SpriteIcon | null;
 }
 
 function readImageUrlFromTooltip(row: Element): string | null {
@@ -45,13 +69,61 @@ function readLink(row: Element, selector: string): string | null {
   return link ? link : null;
 }
 
+function readSpriteStyle(el: Element | null): Omit<SpriteIcon, 'label'> | null {
+  const style = el?.getAttribute('style');
+  if (!style) return null;
+  const imageUrl = style.match(
+    /background-image:\s*url\(['"]?([^'")]+)['"]?\)/,
+  )?.[1];
+  const position = style.match(/background-position:\s*([^;]+)/)?.[1]?.trim();
+  const width = style.match(/(?<!min-)width:\s*([^;]+)/)?.[1]?.trim();
+  const height = style.match(/(?<!min-)height:\s*([^;]+)/)?.[1]?.trim();
+  if (!imageUrl || !position || !width || !height) return null;
+  return { imageUrl, position, width, height };
+}
+
+function readSpriteIcon(el: Element | null): SpriteIcon | null {
+  const style = readSpriteStyle(el);
+  const label = el?.getAttribute('aria-label')?.trim();
+  if (!style || !label) return null;
+  return { ...style, label };
+}
+
+function readSetIcon(attributes: Element | null): SpriteIcon | null {
+  const link = attributes?.querySelector(SET_LINK_SELECTOR) ?? null;
+  // The label lives on the wrapping <a>, the sprite style on its nested <span>.
+  const style = readSpriteStyle(link?.querySelector('span') ?? null);
+  const label = link?.getAttribute('aria-label')?.trim();
+  if (!style || !label) return null;
+  return { ...style, label };
+}
+
+function readCondition(attributes: Element | null): Condition | null {
+  const link = attributes?.querySelector(CONDITION_SELECTOR) ?? null;
+  const abbreviation = link?.querySelector('.badge')?.textContent?.trim();
+  const label = link?.getAttribute('data-bs-original-title')?.trim();
+  if (!abbreviation || !label) return null;
+  return { abbreviation, label };
+}
+
 /** Parses each offer row of a seller's offers grid (see `findOffersTable`) into structured data. */
 export function parseOffers(table: HTMLElement): Offer[] {
-  return Array.from(table.querySelectorAll(BODY_ROW_SELECTOR)).map((row) => ({
-    name: readText(row, NAME_SELECTOR) ?? '',
-    cardUrl: readLink(row, NAME_SELECTOR) ?? '',
-    priceText: readText(row, PRICE_SELECTOR),
-    imageUrl: readImageUrl(row),
-    quantity: readText(row, QUANTITY_SELECTOR),
-  }));
+  return Array.from(table.querySelectorAll(BODY_ROW_SELECTOR)).map((row) => {
+    const attributes = row.querySelector(PRODUCT_ATTRIBUTES_SELECTOR);
+    return {
+      name: readText(row, NAME_SELECTOR) ?? '',
+      cardUrl: readLink(row, NAME_SELECTOR) ?? '',
+      priceText: readText(row, PRICE_SELECTOR),
+      imageUrl: readImageUrl(row),
+      quantity: readText(row, QUANTITY_SELECTOR),
+      set: readSetIcon(attributes),
+      language: readSpriteIcon(
+        attributes?.querySelector(LANGUAGE_ICON_SELECTOR) ?? null,
+      ),
+      condition: readCondition(attributes),
+      foil: readSpriteIcon(
+        attributes?.querySelector(FOIL_ICON_SELECTOR) ?? null,
+      ),
+    };
+  });
 }

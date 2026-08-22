@@ -5,9 +5,14 @@ import type { Offer } from './parse-offers.js';
 function buildOffer(overrides: Partial<Offer> = {}): Offer {
   return {
     name: 'Llanowar Elves',
+    cardUrl: '/en/Magic/Products/Singles/Dominaria/Llanowar-Elves',
     priceText: '0,20 €',
     imageUrl: null,
     quantity: null,
+    set: null,
+    language: null,
+    condition: null,
+    foil: null,
     ...overrides,
   };
 }
