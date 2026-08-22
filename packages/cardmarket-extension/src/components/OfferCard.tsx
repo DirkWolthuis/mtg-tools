@@ -22,7 +22,9 @@ export function OfferCard({ offer }: OfferCardProps) {
           <span className="text-xs text-gray-400">No image</span>
         )}
       </div>
-      <span className="font-medium">{offer.name}</span>
+      <a href={offer.cardUrl} className="font-medium">
+        {offer.name}
+      </a>
       {offer.quantity && (
         <span className="text-sm text-gray-500">{offer.quantity}</span>
       )}
