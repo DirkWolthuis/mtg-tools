@@ -56,6 +56,31 @@ describe('parseOffers', () => {
     ]);
   });
 
+  it('extracts the image from a thumbnail tooltip when there is no <img> tag', () => {
+    const table = buildTable(`
+      <div class="row g-0 article-row">
+        <div class="col-thumbnail col-icon">
+          <span data-bs-title="&lt;img src=&quot;https://product-images.s3.cardmarket.com/1/XUNF/676516/676516.jpg&quot; alt=&quot;Brims&quot;&gt;" class="thumbnail-icon icon"></span>
+        </div>
+        <div class="col-sellerProductInfo col">Brims Barone</div>
+        <div class="item-count">1</div>
+        <div class="col-offer col-auto">
+          <div class="price-container"><span class="color-primary">1,00 &euro;</span></div>
+        </div>
+      </div>
+    `);
+
+    expect(parseOffers(table)).toEqual([
+      {
+        name: 'Brims Barone',
+        priceText: '1,00 €',
+        imageUrl:
+          'https://product-images.s3.cardmarket.com/1/XUNF/676516/676516.jpg',
+        quantity: '1',
+      },
+    ]);
+  });
+
   it('returns an empty array when there are no offer rows', () => {
     const table = buildTable('');
 

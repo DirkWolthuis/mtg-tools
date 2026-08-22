@@ -11,7 +11,7 @@ export function OfferCard({ offer }: OfferCardProps) {
       className="flex flex-col border border-gray-300 p-2"
       data-testid="offer-card"
     >
-      <div className="mb-2 flex aspect-[5/7] items-center justify-center bg-gray-100">
+      <div className="mb-2 flex aspect-5/7 items-center justify-center bg-gray-100">
         {offer.imageUrl ? (
           <img
             src={offer.imageUrl}

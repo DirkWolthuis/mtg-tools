@@ -2,6 +2,8 @@ const BODY_ROW_SELECTOR = '.table-body .article-row';
 const NAME_SELECTOR = '.col-sellerProductInfo';
 const PRICE_SELECTOR = '.col-offer .price-container .color-primary';
 const IMAGE_SELECTOR = 'img[src], img[data-src], [data-image]';
+// The thumbnail is a plain icon whose real <img> markup is stashed in a tooltip attribute.
+const THUMBNAIL_TOOLTIP_SELECTOR = '.col-thumbnail [data-bs-title]';
 // Not yet confirmed against a live page - update once real row markup is available.
 const QUANTITY_SELECTOR = '.item-count, .amount-container, [data-amount]';
 
@@ -12,14 +14,24 @@ export interface Offer {
   quantity: string | null;
 }
 
+function readImageUrlFromTooltip(row: Element): string | null {
+  const tooltip = row
+    .querySelector(THUMBNAIL_TOOLTIP_SELECTOR)
+    ?.getAttribute('data-bs-title');
+  if (!tooltip) return null;
+  return tooltip.match(/src="([^"]+)"/)?.[1] ?? null;
+}
+
 function readImageUrl(row: Element): string | null {
   const img = row.querySelector(IMAGE_SELECTOR);
-  if (!img) return null;
-  return (
-    img.getAttribute('src') ??
-    img.getAttribute('data-src') ??
-    img.getAttribute('data-image')
-  );
+  if (img) {
+    return (
+      img.getAttribute('src') ??
+      img.getAttribute('data-src') ??
+      img.getAttribute('data-image')
+    );
+  }
+  return readImageUrlFromTooltip(row);
 }
 
 function readText(row: Element, selector: string): string | null {

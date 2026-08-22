@@ -7,7 +7,7 @@
     "name": "cardmarket-extension"
   },
   "scripts": {
-    "build": "tsc --build tsconfig.lib.json",
+    "build": "vite build",
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts"
   },
