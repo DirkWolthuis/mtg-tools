@@ -41,6 +41,8 @@ describe('parseOffers', () => {
         language: null,
         condition: null,
         foil: null,
+        cardmarketId: null,
+        scryfallCard: null,
       },
     ]);
   });
@@ -66,6 +68,8 @@ describe('parseOffers', () => {
         language: null,
         condition: null,
         foil: null,
+        cardmarketId: null,
+        scryfallCard: null,
       },
     ]);
   });
@@ -116,6 +120,8 @@ describe('parseOffers', () => {
         },
         condition: { abbreviation: 'NM', label: 'Near Mint' },
         foil: null,
+        cardmarketId: null,
+        scryfallCard: null,
       },
     ]);
   });
@@ -172,6 +178,8 @@ describe('parseOffers', () => {
         language: null,
         condition: null,
         foil: null,
+        cardmarketId: '676516',
+        scryfallCard: null,
       },
     ]);
   });
@@ -180,5 +188,20 @@ describe('parseOffers', () => {
     const table = buildTable('');
 
     expect(parseOffers(table)).toEqual([]);
+  });
+
+  it('derives cardmarketId from a plain <img> src pointing at the product image CDN', () => {
+    const table = buildTable(`
+      <div class="row g-0 article-row">
+        <div class="col-sellerProductInfo col">
+          <div class="col-seller"><a href="/en/Magic/Products/Singles/M20/Embodiment-of-Agonies">Embodiment of Agonies</a></div>
+        </div>
+        <div class="col-offer col-auto">
+          <img src="https://product-images.s3.cardmarket.com/1/M20/379041/379041.jpg" />
+        </div>
+      </div>
+    `);
+
+    expect(parseOffers(table)[0]?.cardmarketId).toBe('379041');
   });
 });

@@ -7,6 +7,11 @@ export interface OffersGridProps {
 
 /** Placeholder offers grid - structural layout only, no visual design. */
 export function OffersGrid({ offers }: OffersGridProps) {
+  console.debug(
+    '[cardmarket-offers-grid] rendering offers grid with',
+    offers,
+    'offer(s)',
+  );
   if (offers.length === 0) {
     return <p data-testid="offers-grid-empty">No offers found.</p>;
   }

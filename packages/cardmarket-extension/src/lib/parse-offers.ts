@@ -1,3 +1,5 @@
+import type { ScryfallCard } from './scryfall.js';
+
 const BODY_ROW_SELECTOR = '.table-body .article-row';
 const NAME_SELECTOR = '.col-sellerProductInfo .col-seller a';
 const PRICE_SELECTOR = '.col-offer .price-container .color-primary';
@@ -12,6 +14,9 @@ const SET_LINK_SELECTOR = '.expansion-symbol';
 const CONDITION_SELECTOR = '.article-condition';
 const LANGUAGE_ICON_SELECTOR = '.icon.me-2';
 const FOIL_ICON_SELECTOR = '.st_SpecialIcon';
+// Cardmarket's product image CDN path repeats the numeric cardmarket id (`idProduct`)
+// as both a directory segment and the filename, e.g. `.../676516/676516.jpg`.
+const CARDMARKET_ID_FROM_IMAGE_URL = /\/(\d+)\.\w+(?:\?.*)?$/;
 
 /** A single sprite-sheet icon (set, language or foil), as rendered on Cardmarket via inline `background-image`/`background-position`. */
 export interface SpriteIcon {
@@ -37,6 +42,10 @@ export interface Offer {
   language: SpriteIcon | null;
   condition: Condition | null;
   foil: SpriteIcon | null;
+  /** Cardmarket's numeric product id (`idProduct`), used to look up the card on Scryfall. */
+  cardmarketId: string | null;
+  /** Full Scryfall card response for `cardmarketId`, filled in later by `enrichOffersWithScryfallData`. */
+  scryfallCard: ScryfallCard | null;
 }
 
 function readImageUrlFromTooltip(row: Element): string | null {
@@ -106,15 +115,20 @@ function readCondition(attributes: Element | null): Condition | null {
   return { abbreviation, label };
 }
 
+function readCardmarketId(imageUrl: string | null): string | null {
+  return imageUrl?.match(CARDMARKET_ID_FROM_IMAGE_URL)?.[1] ?? null;
+}
+
 /** Parses each offer row of a seller's offers grid (see `findOffersTable`) into structured data. */
 export function parseOffers(table: HTMLElement): Offer[] {
   return Array.from(table.querySelectorAll(BODY_ROW_SELECTOR)).map((row) => {
     const attributes = row.querySelector(PRODUCT_ATTRIBUTES_SELECTOR);
+    const imageUrl = readImageUrl(row);
     return {
       name: readText(row, NAME_SELECTOR) ?? '',
       cardUrl: readLink(row, NAME_SELECTOR) ?? '',
       priceText: readText(row, PRICE_SELECTOR),
-      imageUrl: readImageUrl(row),
+      imageUrl,
       quantity: readText(row, QUANTITY_SELECTOR),
       set: readSetIcon(attributes),
       language: readSpriteIcon(
@@ -124,6 +138,8 @@ export function parseOffers(table: HTMLElement): Offer[] {
       foil: readSpriteIcon(
         attributes?.querySelector(FOIL_ICON_SELECTOR) ?? null,
       ),
+      cardmarketId: readCardmarketId(imageUrl),
+      scryfallCard: null,
     };
   });
 }

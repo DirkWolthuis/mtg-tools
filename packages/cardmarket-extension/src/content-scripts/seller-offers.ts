@@ -1,11 +1,12 @@
 import { findOffersTable } from '../lib/offers-table.js';
 import { parseOffers } from '../lib/parse-offers.js';
+import { enrichOffersWithScryfallData } from '../lib/enrich-offers.js';
 import { renderOffersGrid } from '../lib/render-offers-grid.js';
 
 const LOG_PREFIX = '[cardmarket-offers-grid]';
 const GRID_ROOT_ID = 'cardmarket-offers-grid-root';
 
-function run(): void {
+async function run(): Promise<void> {
   console.debug(LOG_PREFIX, 'content script injected on', window.location.href);
 
   if (document.getElementById(GRID_ROOT_ID)) return; // already rendered
@@ -19,7 +20,12 @@ function run(): void {
     return;
   }
 
-  const offers = parseOffers(table);
+  const parsedOffers = parseOffers(table);
+  console.debug(
+    LOG_PREFIX,
+    `parsed ${parsedOffers.length} offer(s), ${parsedOffers.filter((offer) => offer.cardmarketId).length} with a cardmarketId`,
+  );
+  const offers = await enrichOffersWithScryfallData(parsedOffers);
 
   const gridRoot = document.createElement('div');
   gridRoot.id = GRID_ROOT_ID;
@@ -29,4 +35,4 @@ function run(): void {
   console.debug(LOG_PREFIX, `rendered ${offers.length} offer(s)`);
 }
 
-run();
+void run();

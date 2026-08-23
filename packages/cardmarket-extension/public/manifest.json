@@ -3,6 +3,10 @@
   "name": "Cardmarket Offers Grid",
   "version": "0.0.1",
   "description": "Replaces a Cardmarket seller's offers table with an image grid.",
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "host_permissions": ["https://api.scryfall.com/*"],
   "content_scripts": [
     {
       "matches": ["https://www.cardmarket.com/*/Users/*"],

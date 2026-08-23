@@ -20,6 +20,10 @@ export default defineConfig(() => ({
           import.meta.dirname,
           'src/content-scripts/seller-offers.ts',
         ),
+        'background/service-worker': path.join(
+          import.meta.dirname,
+          'src/background/service-worker.ts',
+        ),
       },
       output: {
         // Fixed (unhashed) file names so manifest.json can reference them directly.

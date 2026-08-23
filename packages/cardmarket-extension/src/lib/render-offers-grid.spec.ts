@@ -13,6 +13,8 @@ function buildOffer(overrides: Partial<Offer> = {}): Offer {
     language: null,
     condition: null,
     foil: null,
+    cardmarketId: null,
+    scryfallCard: null,
     ...overrides,
   };
 }
