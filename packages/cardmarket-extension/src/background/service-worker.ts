@@ -10,6 +10,14 @@ import {
 
 const LOG_PREFIX = '[cardmarket-offers-grid:background]';
 
+// Scryfall asks integrations to leave ~50-100ms between sequential requests,
+// see https://scryfall.com/docs/api/rate-limits.
+const REQUEST_DELAY_MS = 100;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 console.debug(LOG_PREFIX, 'service worker started');
 
 chrome.runtime.onMessage.addListener(
@@ -25,7 +33,7 @@ chrome.runtime.onMessage.addListener(
     }
 
     fetchScryfallCardByCardmarketId(message.cardmarketId)
-      .then((card) => {
+      .then(async (card) => {
         console.debug(
           LOG_PREFIX,
           'resolved card for',
@@ -33,6 +41,8 @@ chrome.runtime.onMessage.addListener(
           card,
         );
         setCachedScryfallCard(message.cardmarketId, card);
+        // Only delay for actual network fetches, not cache hits.
+        await delay(REQUEST_DELAY_MS);
         sendResponse({ card } satisfies FetchScryfallCardResponse);
       })
       .catch((error: unknown) => {

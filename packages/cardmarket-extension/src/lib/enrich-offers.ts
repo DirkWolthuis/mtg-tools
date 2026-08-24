@@ -6,9 +6,6 @@ import type {
   FetchScryfallCardResponse,
 } from './scryfall-messages.js';
 
-// Scryfall asks integrations to leave ~50-100ms between sequential requests,
-// see https://scryfall.com/docs/api/rate-limits.
-const REQUEST_DELAY_MS = 100;
 const LOG_PREFIX = '[cardmarket-offers-grid:enrich]';
 
 function requestScryfallCard(
@@ -37,10 +34,6 @@ function requestScryfallCard(
       },
     );
   });
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -80,7 +73,6 @@ export async function enrichOffersWithScryfallData(
       scryfallCard,
     );
     enriched.push({ ...offer, scryfallCard, priceDiffFromAverage });
-    await delay(REQUEST_DELAY_MS);
   }
   return enriched;
 }
