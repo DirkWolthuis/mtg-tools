@@ -34,6 +34,18 @@ function OfferIcon({ icon, invert }: { icon: SpriteIcon; invert?: boolean }) {
   );
 }
 
+export function Price({ offer }: OfferCardProps) {
+  const parsedPrice = parsePrice(offer.priceText) ?? 0;
+  const parsedAveragePrice = parseFloat(offer.scryfallCard?.prices.eur);
+  const diffWithAverage = parsedPrice - parsedAveragePrice;
+  console.log(parsedPrice, parsedAveragePrice, diffWithAverage);
+  return (
+    <span className="text-sm">
+      {offer.priceText} ({diffWithAverage})
+    </span>
+  );
+}
+
 /** Placeholder single-offer card - structural layout only, no visual design. */
 export function OfferCard({ offer }: OfferCardProps) {
   return (
@@ -84,7 +96,17 @@ export function OfferCard({ offer }: OfferCardProps) {
       {offer.quantity && (
         <span className="text-sm text-gray-500">{offer.quantity}</span>
       )}
-      {offer.priceText && <span className="text-sm">{offer.priceText}</span>}
+      {offer.priceText && <Price offer={offer} />}
     </div>
   );
+}
+
+function parsePrice(priceText: string | null): number | null {
+  if (!priceText) return null;
+  const normalized = priceText
+    .replace(/[^\d,.-]/g, '') // strip currency symbol/whitespace
+    .replace(/\./g, '') // drop thousands separators
+    .replace(',', '.'); // decimal comma -> dot
+  const value = parseFloat(normalized);
+  return Number.isNaN(value) ? null : value;
 }
