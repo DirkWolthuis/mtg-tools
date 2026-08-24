@@ -1,3 +1,4 @@
+import type { PriceDiffFromAverage } from './post-process-scryfall-card.js';
 import type { ScryfallCard } from './scryfall.js';
 
 const BODY_ROW_SELECTOR = '.table-body .article-row';
@@ -46,6 +47,8 @@ export interface Offer {
   cardmarketId: string | null;
   /** Full Scryfall card response for `cardmarketId`, filled in later by `enrichOffersWithScryfallData`. */
   scryfallCard: ScryfallCard | null;
+  /** Offer price diffed against Scryfall's average price, filled in later by `enrichOffersWithScryfallData`. */
+  priceDiffFromAverage: PriceDiffFromAverage | null;
 }
 
 function readImageUrlFromTooltip(row: Element): string | null {
@@ -140,6 +143,7 @@ export function parseOffers(table: HTMLElement): Offer[] {
       ),
       cardmarketId: readCardmarketId(imageUrl),
       scryfallCard: null,
+      priceDiffFromAverage: null,
     };
   });
 }

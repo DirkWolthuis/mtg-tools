@@ -1,4 +1,5 @@
 import type { Offer } from './parse-offers.js';
+import { computePriceDiffFromAverage } from './post-process-scryfall-card.js';
 import type { ScryfallCard } from './scryfall.js';
 import type {
   FetchScryfallCardMessage,
@@ -74,7 +75,11 @@ export async function enrichOffersWithScryfallData(
       offer.cardmarketId,
       scryfallCard,
     );
-    enriched.push({ ...offer, scryfallCard });
+    const priceDiffFromAverage = computePriceDiffFromAverage(
+      offer,
+      scryfallCard,
+    );
+    enriched.push({ ...offer, scryfallCard, priceDiffFromAverage });
     await delay(REQUEST_DELAY_MS);
   }
   return enriched;

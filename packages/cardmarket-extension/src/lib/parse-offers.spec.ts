@@ -43,6 +43,7 @@ describe('parseOffers', () => {
         foil: null,
         cardmarketId: null,
         scryfallCard: null,
+        priceDiffFromAverage: null,
       },
     ]);
   });
@@ -70,6 +71,7 @@ describe('parseOffers', () => {
         foil: null,
         cardmarketId: null,
         scryfallCard: null,
+        priceDiffFromAverage: null,
       },
     ]);
   });
@@ -122,6 +124,7 @@ describe('parseOffers', () => {
         foil: null,
         cardmarketId: null,
         scryfallCard: null,
+        priceDiffFromAverage: null,
       },
     ]);
   });
@@ -180,6 +183,7 @@ describe('parseOffers', () => {
         foil: null,
         cardmarketId: '676516',
         scryfallCard: null,
+        priceDiffFromAverage: null,
       },
     ]);
   });

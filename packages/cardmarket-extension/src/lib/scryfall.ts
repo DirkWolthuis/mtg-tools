@@ -1,5 +1,7 @@
-/** Full JSON response for a single card, see https://scryfall.com/docs/api/cards. Deliberately untyped field-by-field - we store the whole response as-is. */
-export type ScryfallCard = Record<string, any>;
+import type { ScryfallCard as ScryfallCardTypes } from '@scryfall/api-types';
+
+/** Full JSON response for a single card, see https://scryfall.com/docs/api/cards. */
+export type ScryfallCard = ScryfallCardTypes.Any;
 
 const CARDMARKET_LOOKUP_URL = 'https://api.scryfall.com/cards/cardmarket/';
 const LOG_PREFIX = '[cardmarket-offers-grid:scryfall]';

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { enrichOffersWithScryfallData } from './enrich-offers.js';
 import type { Offer } from './parse-offers.js';
+import type { ScryfallCard } from './scryfall.js';
 
 function buildOffer(overrides: Partial<Offer> = {}): Offer {
   return {
@@ -15,6 +16,7 @@ function buildOffer(overrides: Partial<Offer> = {}): Offer {
     foil: null,
     cardmarketId: null,
     scryfallCard: null,
+    priceDiffFromAverage: null,
     ...overrides,
   };
 }
@@ -41,7 +43,11 @@ describe('enrichOffersWithScryfallData', () => {
   });
 
   it('requests and stores the Scryfall card for offers with a cardmarketId', async () => {
-    const card = { object: 'card', cardmarket_id: 379041 };
+    const card = {
+      object: 'card',
+      cardmarket_id: 379041,
+      prices: { eur: '0.10' },
+    } as unknown as ScryfallCard;
     const sendMessage = vi.fn(
       (_message: unknown, callback: (response: { card: unknown }) => void) => {
         callback({ card });
@@ -56,7 +62,11 @@ describe('enrichOffersWithScryfallData', () => {
     const result = await promise;
 
     expect(result).toEqual([
-      buildOffer({ cardmarketId: '379041', scryfallCard: card }),
+      buildOffer({
+        cardmarketId: '379041',
+        scryfallCard: card,
+        priceDiffFromAverage: { absolute: 0.1, percentage: 1 },
+      }),
     ]);
     expect(sendMessage).toHaveBeenCalledWith(
       { type: 'fetch-scryfall-card', cardmarketId: '379041' },

@@ -12,6 +12,7 @@
     "test:watch": "vitest --config vitest.config.ts"
   },
   "dependencies": {
+    "@scryfall/api-types": "^1.0.0-alpha.4",
     "preact": "^10.29.8",
     "vitest": "4.1.10"
   },
