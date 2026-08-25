@@ -50,8 +50,8 @@ function CubeStats({ offer }: OfferCardProps) {
   if (!stats) return null;
   return (
     <span className="text-xs text-gray-500">
-      Elo {stats.elo.toFixed(0)} · {(stats.popularity * 100).toFixed(1)}%
-      popularity · {stats.cubeCount} cubes
+      Elo {stats.elo.toFixed(0)} · in {stats.popularity.toFixed(1)}% cubes · (
+      {stats.cubeCount})
     </span>
   );
 }
