@@ -17,6 +17,7 @@ function buildOffer(overrides: Partial<Offer> = {}): Offer {
     cardmarketId: null,
     scryfallCard: null,
     priceDiffFromAverage: null,
+    cubeStats: null,
     ...overrides,
   };
 }
@@ -49,8 +50,11 @@ describe('enrichOffersWithScryfallData', () => {
       prices: { eur: '0.10' },
     } as unknown as ScryfallCard;
     const sendMessage = vi.fn(
-      (_message: unknown, callback: (response: { card: unknown }) => void) => {
-        callback({ card });
+      (
+        _message: unknown,
+        callback: (response: { card: unknown; cubeStats: unknown }) => void,
+      ) => {
+        callback({ card, cubeStats: null });
       },
     );
     vi.stubGlobal('chrome', { runtime: { sendMessage } });
@@ -72,5 +76,27 @@ describe('enrichOffersWithScryfallData', () => {
       { type: 'fetch-scryfall-card', cardmarketId: '379041' },
       expect.any(Function),
     );
+  });
+
+  it('attaches cubeStats from the background response', async () => {
+    const card = { object: 'card', id: 'abc-123' } as unknown as ScryfallCard;
+    const cubeStats = { elo: 1500, popularity: 0.5, cubeCount: 100 };
+    const sendMessage = vi.fn(
+      (
+        _message: unknown,
+        callback: (response: { card: unknown; cubeStats: unknown }) => void,
+      ) => {
+        callback({ card, cubeStats });
+      },
+    );
+    vi.stubGlobal('chrome', { runtime: { sendMessage } });
+
+    const promise = enrichOffersWithScryfallData([
+      buildOffer({ cardmarketId: '379041', priceText: null }),
+    ]);
+    await vi.runAllTimersAsync();
+    const result = await promise;
+
+    expect(result[0]?.cubeStats).toEqual(cubeStats);
   });
 });

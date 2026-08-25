@@ -1,3 +1,4 @@
+import type { CubeStats } from './post-process-scryfall-card.js';
 import type { ScryfallCard } from './scryfall.js';
 
 // Content scripts can't reliably call external APIs directly - fetches made
@@ -13,4 +14,5 @@ export interface FetchScryfallCardMessage {
 
 export interface FetchScryfallCardResponse {
   card: ScryfallCard | null;
+  cubeStats: CubeStats | null;
 }

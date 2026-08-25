@@ -1,8 +1,10 @@
+import { getCubeStats } from '../lib/post-process-scryfall-card.js';
 import { fetchScryfallCardByCardmarketId } from '../lib/scryfall.js';
 import type {
   FetchScryfallCardMessage,
   FetchScryfallCardResponse,
 } from '../lib/scryfall-messages.js';
+import { getCubeStatsMap } from './cube-stats-cache.js';
 import {
   getCachedScryfallCard,
   setCachedScryfallCard,
@@ -28,8 +30,21 @@ chrome.runtime.onMessage.addListener(
     const cached = getCachedScryfallCard(message.cardmarketId);
     if (cached !== undefined) {
       console.debug(LOG_PREFIX, 'cache hit for', message.cardmarketId, cached);
-      sendResponse({ card: cached } satisfies FetchScryfallCardResponse);
-      return undefined;
+      getCubeStatsMap()
+        .then((cubeStats) => {
+          sendResponse({
+            card: cached,
+            cubeStats: getCubeStats(cached, cubeStats),
+          } satisfies FetchScryfallCardResponse);
+        })
+        .catch((error: unknown) => {
+          console.debug(LOG_PREFIX, 'cube stats lookup failed', error);
+          sendResponse({
+            card: cached,
+            cubeStats: null,
+          } satisfies FetchScryfallCardResponse);
+        });
+      return true; // keep the message channel open for the async sendResponse above
     }
 
     fetchScryfallCardByCardmarketId(message.cardmarketId)
@@ -43,11 +58,15 @@ chrome.runtime.onMessage.addListener(
         setCachedScryfallCard(message.cardmarketId, card);
         // Only delay for actual network fetches, not cache hits.
         await delay(REQUEST_DELAY_MS);
-        sendResponse({ card } satisfies FetchScryfallCardResponse);
+        const cubeStats = getCubeStats(card, await getCubeStatsMap());
+        sendResponse({ card, cubeStats } satisfies FetchScryfallCardResponse);
       })
       .catch((error: unknown) => {
         console.debug(LOG_PREFIX, 'scryfall lookup failed', error);
-        sendResponse({ card: null } satisfies FetchScryfallCardResponse);
+        sendResponse({
+          card: null,
+          cubeStats: null,
+        } satisfies FetchScryfallCardResponse);
       });
 
     return true; // keep the message channel open for the async sendResponse above

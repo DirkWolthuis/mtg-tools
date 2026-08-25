@@ -7,7 +7,7 @@
     "name": "cardmarket-extension"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "BUILD_ENTRY=content-scripts/seller-offers vite build && BUILD_ENTRY=background/service-worker vite build",
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts"
   },

@@ -4,32 +4,46 @@ import * as path from 'path';
 import preact from '@preact/preset-vite';
 import tailwindcss from '@tailwindcss/vite';
 
-// Chrome MV3 bundle: a single content script entry. manifest.json is static
-// and copied as-is from `public/` (Vite's default publicDir).
+// Chrome MV3 bundle: content scripts must be classic scripts (no import/export),
+// so each entry is built as a standalone IIFE via its own rollup input/build.
+// Rollup/rolldown don't support code-splitting (shared chunks) with the iife
+// format across multiple inputs, so we run one build per entry instead.
+const entries = {
+  'content-scripts/seller-offers': 'src/content-scripts/seller-offers.ts',
+  'background/service-worker': 'src/background/service-worker.ts',
+};
+const entryName = process.env.BUILD_ENTRY;
+
 export default defineConfig(() => ({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/packages/cardmarket-extension',
   plugins: [preact(), tailwindcss()],
   build: {
     outDir: './dist',
-    emptyOutDir: true,
+    emptyOutDir: !entryName || entryName === Object.keys(entries)[0],
     reportCompressedSize: true,
     rolldownOptions: {
-      input: {
-        'content-scripts/seller-offers': path.join(
-          import.meta.dirname,
-          'src/content-scripts/seller-offers.ts',
-        ),
-        'background/service-worker': path.join(
-          import.meta.dirname,
-          'src/background/service-worker.ts',
-        ),
-      },
+      input: entryName
+        ? {
+            [entryName]: path.join(
+              import.meta.dirname,
+              entries[entryName as keyof typeof entries],
+            ),
+          }
+        : Object.fromEntries(
+            Object.entries(entries).map(([name, file]) => [
+              name,
+              path.join(import.meta.dirname, file),
+            ]),
+          ),
       output: {
         // Fixed (unhashed) file names so manifest.json can reference them directly.
         entryFileNames: '[name].js',
-        chunkFileNames: 'chunks/[name].js',
         assetFileNames: 'assets/[name][extname]',
+        // Content scripts can't be loaded as ES modules; bundle each entry
+        // as a self-contained IIFE with no shared external chunks.
+        format: 'iife' as const,
+        inlineDynamicImports: true,
       },
     },
   },

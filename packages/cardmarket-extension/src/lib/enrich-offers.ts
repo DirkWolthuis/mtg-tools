@@ -1,5 +1,8 @@
 import type { Offer } from './parse-offers.js';
-import { computePriceDiffFromAverage } from './post-process-scryfall-card.js';
+import {
+  computePriceDiffFromAverage,
+  type CubeStats,
+} from './post-process-scryfall-card.js';
 import type { ScryfallCard } from './scryfall.js';
 import type {
   FetchScryfallCardMessage,
@@ -8,9 +11,14 @@ import type {
 
 const LOG_PREFIX = '[cardmarket-offers-grid:enrich]';
 
+interface ScryfallCardLookup {
+  card: ScryfallCard | null;
+  cubeStats: CubeStats | null;
+}
+
 function requestScryfallCard(
   cardmarketId: string,
-): Promise<ScryfallCard | null> {
+): Promise<ScryfallCardLookup> {
   const message: FetchScryfallCardMessage = {
     type: 'fetch-scryfall-card',
     cardmarketId,
@@ -27,10 +35,13 @@ function requestScryfallCard(
             'sendMessage failed',
             chrome.runtime.lastError.message,
           );
-          resolve(null);
+          resolve({ card: null, cubeStats: null });
           return;
         }
-        resolve(response?.card ?? null);
+        resolve({
+          card: response?.card ?? null,
+          cubeStats: response?.cubeStats ?? null,
+        });
       },
     );
   });
@@ -61,7 +72,9 @@ export async function enrichOffersWithScryfallData(
       'requesting scryfall card for cardmarketId',
       offer.cardmarketId,
     );
-    const scryfallCard = await requestScryfallCard(offer.cardmarketId);
+    const { card: scryfallCard, cubeStats } = await requestScryfallCard(
+      offer.cardmarketId,
+    );
     console.debug(
       LOG_PREFIX,
       'received scryfall card for cardmarketId',
@@ -72,7 +85,7 @@ export async function enrichOffersWithScryfallData(
       offer,
       scryfallCard,
     );
-    enriched.push({ ...offer, scryfallCard, priceDiffFromAverage });
+    enriched.push({ ...offer, scryfallCard, priceDiffFromAverage, cubeStats });
   }
   return enriched;
 }

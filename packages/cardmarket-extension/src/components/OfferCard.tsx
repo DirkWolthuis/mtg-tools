@@ -45,6 +45,17 @@ export function Price({ offer }: OfferCardProps) {
   );
 }
 
+function CubeStats({ offer }: OfferCardProps) {
+  const stats = offer.cubeStats;
+  if (!stats) return null;
+  return (
+    <span className="text-xs text-gray-500">
+      Elo {stats.elo.toFixed(0)} · {(stats.popularity * 100).toFixed(1)}%
+      popularity · {stats.cubeCount} cubes
+    </span>
+  );
+}
+
 /** Placeholder single-offer card - structural layout only, no visual design. */
 export function OfferCard({ offer }: OfferCardProps) {
   return (
@@ -96,6 +107,7 @@ export function OfferCard({ offer }: OfferCardProps) {
         <span className="text-sm text-gray-500">{offer.quantity}</span>
       )}
       {offer.priceText && <Price offer={offer} />}
+      <CubeStats offer={offer} />
     </div>
   );
 }

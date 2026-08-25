@@ -1,4 +1,7 @@
-import type { PriceDiffFromAverage } from './post-process-scryfall-card.js';
+import type {
+  CubeStats,
+  PriceDiffFromAverage,
+} from './post-process-scryfall-card.js';
 import type { ScryfallCard } from './scryfall.js';
 
 const BODY_ROW_SELECTOR = '.table-body .article-row';
@@ -49,6 +52,8 @@ export interface Offer {
   scryfallCard: ScryfallCard | null;
   /** Offer price diffed against Scryfall's average price, filled in later by `enrichOffersWithScryfallData`. */
   priceDiffFromAverage: PriceDiffFromAverage | null;
+  /** CubeCobra popularity stats for `scryfallCard`, filled in later by `enrichOffersWithScryfallData`. */
+  cubeStats: CubeStats | null;
 }
 
 function readImageUrlFromTooltip(row: Element): string | null {
@@ -144,6 +149,7 @@ export function parseOffers(table: HTMLElement): Offer[] {
       cardmarketId: readCardmarketId(imageUrl),
       scryfallCard: null,
       priceDiffFromAverage: null,
+      cubeStats: null,
     };
   });
 }

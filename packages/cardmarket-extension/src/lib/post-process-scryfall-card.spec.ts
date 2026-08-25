@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   computePriceDiffFromAverage,
+  getCubeStats,
   parsePrice,
 } from './post-process-scryfall-card.js';
 import type { ScryfallCard } from './scryfall.js';
@@ -88,5 +89,25 @@ describe('computePriceDiffFromAverage', () => {
     );
 
     expect(result).toEqual({ absolute: 1, percentage: 0.5 });
+  });
+});
+
+describe('getCubeStats', () => {
+  const stats = { elo: 1500, popularity: 0.5, cubeCount: 100 };
+
+  it('returns null when there is no scryfallCard', () => {
+    expect(getCubeStats(null, { 'card-id': stats })).toBeNull();
+  });
+
+  it('returns null when the card id has no entry in the map', () => {
+    expect(
+      getCubeStats({ id: 'other-id' } as ScryfallCard, { 'card-id': stats }),
+    ).toBeNull();
+  });
+
+  it('returns the stats for the matching scryfall id', () => {
+    expect(
+      getCubeStats({ id: 'card-id' } as ScryfallCard, { 'card-id': stats }),
+    ).toEqual(stats);
   });
 });
