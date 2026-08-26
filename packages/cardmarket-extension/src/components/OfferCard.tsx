@@ -59,13 +59,14 @@ function CubeStats({ offer }: OfferCardProps) {
 
 /** Clicks the original (untouched, still in-page) buy button - moving/cloning it made Cardmarket's own add-to-cart request get rejected (403). */
 function Actions({ offer }: OfferCardProps) {
-  if (!offer.actionsElement) return null;
+  const element = offer.actionsElement;
+  if (!element) return null;
   return (
     <button
       type="button"
-      className="mt-2 rounded bg-blue-600 px-2 py-1 text-sm text-white"
+      className="mt-2 cursor-pointer rounded bg-blue-600 px-2 py-1 text-sm text-white"
       data-testid="offer-card-actions"
-      onClick={() => findBuyButton(offer.actionsElement!)?.click()}
+      onClick={() => findBuyButton(element)?.click()}
     >
       Add
     </button>
