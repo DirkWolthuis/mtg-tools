@@ -18,6 +18,7 @@ function buildOffer(overrides: Partial<Offer> = {}): Offer {
     scryfallCard: null,
     priceDiffFromAverage: null,
     cubeStats: null,
+    actionsElement: null,
     ...overrides,
   };
 }

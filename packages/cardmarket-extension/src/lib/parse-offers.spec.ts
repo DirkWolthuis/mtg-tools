@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseOffers } from './parse-offers.js';
+import { findBuyButton, parseOffers } from './parse-offers.js';
 
 function buildTable(rowsHtml: string): HTMLElement {
   const doc = new DOMParser().parseFromString(
@@ -45,6 +45,7 @@ describe('parseOffers', () => {
         scryfallCard: null,
         priceDiffFromAverage: null,
         cubeStats: null,
+        actionsElement: null,
       },
     ]);
   });
@@ -74,6 +75,7 @@ describe('parseOffers', () => {
         scryfallCard: null,
         priceDiffFromAverage: null,
         cubeStats: null,
+        actionsElement: null,
       },
     ]);
   });
@@ -128,6 +130,7 @@ describe('parseOffers', () => {
         scryfallCard: null,
         priceDiffFromAverage: null,
         cubeStats: null,
+        actionsElement: null,
       },
     ]);
   });
@@ -188,6 +191,7 @@ describe('parseOffers', () => {
         scryfallCard: null,
         priceDiffFromAverage: null,
         cubeStats: null,
+        actionsElement: null,
       },
     ]);
   });
@@ -196,6 +200,36 @@ describe('parseOffers', () => {
     const table = buildTable('');
 
     expect(parseOffers(table)).toEqual([]);
+  });
+
+  it('exposes the original actions-container element for the buy button/quantity dropdown, left untouched', () => {
+    const table = buildTable(`
+      <div class="row g-0 article-row">
+        <div class="col-sellerProductInfo col">
+          <div class="col-seller"><a href="/en/Magic/Products/Singles/Alpha/Counterspell">Counterspell</a></div>
+        </div>
+        <div class="col-offer col-auto"></div>
+        <div class="actions-container"><select name="amount[123]"><option value="1">1</option></select><form><button type="submit">Buy</button></form></div>
+      </div>
+    `);
+
+    const actionsElement = parseOffers(table)[0]?.actionsElement;
+    expect(actionsElement?.outerHTML).toBe(
+      '<div class="actions-container"><select name="amount[123]"><option value="1">1</option></select><form><button type="submit">Buy</button></form></div>',
+    );
+  });
+
+  it('returns null for actionsElement when there is no actions-container', () => {
+    const table = buildTable(`
+      <div class="row g-0 article-row">
+        <div class="col-sellerProductInfo col">
+          <div class="col-seller"><a href="/en/Magic/Products/Singles/Alpha/Counterspell">Counterspell</a></div>
+        </div>
+        <div class="col-offer col-auto"></div>
+      </div>
+    `);
+
+    expect(parseOffers(table)[0]?.actionsElement).toBeNull();
   });
 
   it('derives cardmarketId from a plain <img> src pointing at the product image CDN', () => {
@@ -211,5 +245,32 @@ describe('parseOffers', () => {
     `);
 
     expect(parseOffers(table)[0]?.cardmarketId).toBe('379041');
+  });
+});
+
+describe('findBuyButton', () => {
+  it('finds the desktop form submit button, not the mobile modal link', () => {
+    const doc = new DOMParser().parseFromString(
+      `<div class="actions-container">
+        <a class="modal-link mobile-cart" href="#">mobile</a>
+        <form><button type="submit">Buy</button></form>
+      </div>`,
+      'text/html',
+    );
+    const actionsElement = doc.body.firstElementChild;
+    if (!actionsElement) throw new Error('expected fixture element');
+
+    expect(findBuyButton(actionsElement)?.textContent).toBe('Buy');
+  });
+
+  it('returns null when there is no submit button', () => {
+    const doc = new DOMParser().parseFromString(
+      `<div class="actions-container"><a class="modal-link mobile-cart" href="#">mobile</a></div>`,
+      'text/html',
+    );
+    const actionsElement = doc.body.firstElementChild;
+    if (!actionsElement) throw new Error('expected fixture element');
+
+    expect(findBuyButton(actionsElement)).toBeNull();
   });
 });

@@ -29,7 +29,10 @@ async function run(): Promise<void> {
 
   const gridRoot = document.createElement('div');
   gridRoot.id = GRID_ROOT_ID;
-  table.replaceWith(gridRoot);
+  table.insertAdjacentElement('afterend', gridRoot);
+  // Hidden, not removed/moved: Cardmarket's add-to-cart request gets rejected (403) if its buy
+  // button is cloned or re-parented elsewhere, so the original table (and its buttons) stay in place.
+  table.style.display = 'none';
 
   renderOffersGrid(gridRoot, offers);
   console.debug(LOG_PREFIX, `rendered ${offers.length} offer(s)`);

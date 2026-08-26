@@ -18,6 +18,11 @@ const SET_LINK_SELECTOR = '.expansion-symbol';
 const CONDITION_SELECTOR = '.article-condition';
 const LANGUAGE_ICON_SELECTOR = '.icon.me-2';
 const FOIL_ICON_SELECTOR = '.st_SpecialIcon';
+// Buy button + quantity dropdown. Left untouched and in its original position in the page - Cardmarket's
+// own add-to-cart request gets rejected (403) if this element is moved/cloned elsewhere before being clicked.
+const ACTIONS_CONTAINER_SELECTOR = '.actions-container';
+// The desktop form's submit button adds to cart directly; the mobile link instead opens a modal.
+const BUY_BUTTON_SELECTOR = 'form button[type="submit"]';
 // Cardmarket's product image CDN path repeats the numeric cardmarket id (`idProduct`)
 // as both a directory segment and the filename, e.g. `.../676516/676516.jpg`.
 const CARDMARKET_ID_FROM_IMAGE_URL = /\/(\d+)\.\w+(?:\?.*)?$/;
@@ -54,6 +59,13 @@ export interface Offer {
   priceDiffFromAverage: PriceDiffFromAverage | null;
   /** CubeCobra popularity stats for `scryfallCard`, filled in later by `enrichOffersWithScryfallData`. */
   cubeStats: CubeStats | null;
+  /** The original `.actions-container` element (buy button + quantity dropdown), left in place in the page - see `findBuyButton`. */
+  actionsElement: Element | null;
+}
+
+/** Finds the real add-to-cart button inside `actionsElement`, to be `.click()`-ed in place instead of moved/cloned. */
+export function findBuyButton(actionsElement: Element): HTMLElement | null {
+  return actionsElement.querySelector<HTMLElement>(BUY_BUTTON_SELECTOR);
 }
 
 function readImageUrlFromTooltip(row: Element): string | null {
@@ -127,6 +139,10 @@ function readCardmarketId(imageUrl: string | null): string | null {
   return imageUrl?.match(CARDMARKET_ID_FROM_IMAGE_URL)?.[1] ?? null;
 }
 
+function readActionsElement(row: Element): Element | null {
+  return row.querySelector(ACTIONS_CONTAINER_SELECTOR);
+}
+
 /** Parses each offer row of a seller's offers grid (see `findOffersTable`) into structured data. */
 export function parseOffers(table: HTMLElement): Offer[] {
   return Array.from(table.querySelectorAll(BODY_ROW_SELECTOR)).map((row) => {
@@ -150,6 +166,7 @@ export function parseOffers(table: HTMLElement): Offer[] {
       scryfallCard: null,
       priceDiffFromAverage: null,
       cubeStats: null,
+      actionsElement: readActionsElement(row),
     };
   });
 }

@@ -1,4 +1,5 @@
 import type { Offer, SpriteIcon } from '../lib/parse-offers.js';
+import { findBuyButton } from '../lib/parse-offers.js';
 
 export interface OfferCardProps {
   offer: Offer;
@@ -56,6 +57,21 @@ function CubeStats({ offer }: OfferCardProps) {
   );
 }
 
+/** Clicks the original (untouched, still in-page) buy button - moving/cloning it made Cardmarket's own add-to-cart request get rejected (403). */
+function Actions({ offer }: OfferCardProps) {
+  if (!offer.actionsElement) return null;
+  return (
+    <button
+      type="button"
+      className="mt-2 rounded bg-blue-600 px-2 py-1 text-sm text-white"
+      data-testid="offer-card-actions"
+      onClick={() => findBuyButton(offer.actionsElement!)?.click()}
+    >
+      Add
+    </button>
+  );
+}
+
 /** Placeholder single-offer card - structural layout only, no visual design. */
 export function OfferCard({ offer }: OfferCardProps) {
   return (
@@ -108,6 +124,7 @@ export function OfferCard({ offer }: OfferCardProps) {
       )}
       {offer.priceText && <Price offer={offer} />}
       <CubeStats offer={offer} />
+      <Actions offer={offer} />
     </div>
   );
 }
