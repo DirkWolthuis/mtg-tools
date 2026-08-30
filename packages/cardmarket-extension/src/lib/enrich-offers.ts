@@ -1,8 +1,6 @@
+import type { CubeStats } from '@org/cubecobra-stats';
 import type { Offer } from './parse-offers.js';
-import {
-  computePriceDiffFromAverage,
-  type CubeStats,
-} from './post-process-scryfall-card.js';
+import { computePriceDiffFromAverage } from './post-process-scryfall-card.js';
 import type { ScryfallCard } from './scryfall.js';
 import type {
   FetchScryfallCardMessage,

@@ -1,4 +1,4 @@
-import { getCubeStats } from '../lib/post-process-scryfall-card.js';
+import { getCubeStats } from '@org/cubecobra-stats';
 import { fetchScryfallCardByCardmarketId } from '../lib/scryfall.js';
 import type {
   FetchScryfallCardMessage,
@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(
         .then((cubeStats) => {
           sendResponse({
             card: cached,
-            cubeStats: getCubeStats(cached, cubeStats),
+            cubeStats: getCubeStats(cached?.id, cubeStats),
           } satisfies FetchScryfallCardResponse);
         })
         .catch((error: unknown) => {
@@ -58,7 +58,7 @@ chrome.runtime.onMessage.addListener(
         setCachedScryfallCard(message.cardmarketId, card);
         // Only delay for actual network fetches, not cache hits.
         await delay(REQUEST_DELAY_MS);
-        const cubeStats = getCubeStats(card, await getCubeStatsMap());
+        const cubeStats = getCubeStats(card?.id, await getCubeStatsMap());
         sendResponse({ card, cubeStats } satisfies FetchScryfallCardResponse);
       })
       .catch((error: unknown) => {

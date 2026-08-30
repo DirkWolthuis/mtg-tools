@@ -6,17 +6,10 @@
     "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
     "emitDeclarationOnly": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2022", "dom", "dom.iterable"],
-    "types": ["vite/client", "chrome"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "references": [
-    {
-      "path": "../../libs/cubecobra-stats/tsconfig.lib.json"
-    }
-  ],
+  "include": ["src/**/*.ts"],
+  "references": [],
   "exclude": [
     "vite.config.ts",
     "vite.config.mts",

@@ -1,7 +1,5 @@
-import type {
-  CubeStats,
-  PriceDiffFromAverage,
-} from './post-process-scryfall-card.js';
+import type { CubeStats } from '@org/cubecobra-stats';
+import type { PriceDiffFromAverage } from './post-process-scryfall-card.js';
 import type { ScryfallCard } from './scryfall.js';
 
 const BODY_ROW_SELECTOR = '.table-body .article-row';

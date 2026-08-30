@@ -8,22 +8,6 @@ export interface PriceDiffFromAverage {
   percentage: number;
 }
 
-/** CubeCobra popularity stats for a card, keyed by Scryfall id in `cube-stats.json`. */
-export interface CubeStats {
-  elo: number;
-  popularity: number;
-  cubeCount: number;
-}
-
-/** Looks up `scryfallCard`'s CubeCobra stats in the (Scryfall id keyed) `cubeStats` map. */
-export function getCubeStats(
-  scryfallCard: ScryfallCard | null,
-  cubeStats: Record<string, CubeStats>,
-): CubeStats | null {
-  if (!scryfallCard) return null;
-  return cubeStats[scryfallCard.id] ?? null;
-}
-
 /** Parses Cardmarket's `"1.234,56 €"` format (dot thousands separator, comma decimal separator) into a number. */
 export function parsePrice(priceText: string | null): number | null {
   if (!priceText) return null;

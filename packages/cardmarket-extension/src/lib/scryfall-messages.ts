@@ -1,4 +1,4 @@
-import type { CubeStats } from './post-process-scryfall-card.js';
+import type { CubeStats } from '@org/cubecobra-stats';
 import type { ScryfallCard } from './scryfall.js';
 
 // Content scripts can't reliably call external APIs directly - fetches made
