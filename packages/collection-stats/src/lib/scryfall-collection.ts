@@ -41,7 +41,7 @@ export async function fetchScryfallCollection(
 
   for (let i = 0; i < batches.length; i++) {
     if (i > 0) await delay(REQUEST_DELAY_MS);
-
+    console.log(`Fetching batch ${i + 1} of ${batches.length}...`);
     const response = await fetch(COLLECTION_URL, {
       method: 'POST',
       headers: {

@@ -30,18 +30,36 @@ function parseCsvLine(line: string): string[] {
   return fields;
 }
 
-/** Parses a Moxfield collection CSV export, returning its card names deduplicated in first-seen order. */
-export function parseCollectionCsv(csvText: string): string[] {
+/** One CSV data row, keyed by its column header. */
+export type CollectionRow = Record<string, string>;
+
+/** Returns the column headers of a Moxfield collection CSV export, in file order. */
+export function parseCollectionCsvHeader(csvText: string): string[] {
+  const [firstLine] = csvText.split(/\r?\n/);
+  return firstLine ? parseCsvLine(firstLine) : [];
+}
+
+/** Parses a Moxfield collection CSV export into row objects keyed by column header. */
+export function parseCollectionCsvRows(csvText: string): CollectionRow[] {
   const lines = csvText.split(/\r?\n/).filter((line) => line.length > 0);
   if (!lines.length) return [];
 
-  const nameIndex = parseCsvLine(lines[0]).indexOf(NAME_COLUMN);
-  if (nameIndex === -1) return [];
+  const header = parseCsvLine(lines[0]);
+  return lines.slice(1).map((line) => {
+    const fields = parseCsvLine(line);
+    const row: CollectionRow = {};
+    header.forEach((column, i) => {
+      row[column] = fields[i] ?? '';
+    });
+    return row;
+  });
+}
 
+/** Parses a Moxfield collection CSV export, returning its card names deduplicated in first-seen order. */
+export function parseCollectionCsv(csvText: string): string[] {
   const names = new Set<string>();
-  for (const line of lines.slice(1)) {
-    const name = parseCsvLine(line)[nameIndex];
-    if (name) names.add(name);
+  for (const row of parseCollectionCsvRows(csvText)) {
+    if (row[NAME_COLUMN]) names.add(row[NAME_COLUMN]);
   }
   return [...names];
 }
