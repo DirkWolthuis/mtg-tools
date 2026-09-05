@@ -11,6 +11,9 @@
     },
     {
       "path": "./packages/collection-stats"
+    },
+    {
+      "path": "./packages/cube-diff"
     }
   ],
   "compilerOptions": {}
