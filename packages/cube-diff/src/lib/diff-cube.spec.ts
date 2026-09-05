@@ -2,9 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { diffCubes } from './diff-cube.js';
 import type { CubeJsonCard } from './cubecobra-api.js';
 
-function card(name: string, oracleId = name.toLowerCase()): CubeJsonCard {
+let nextIndex = 0;
+
+function card(
+  name: string,
+  oracleId = name.toLowerCase(),
+  index = nextIndex++,
+): CubeJsonCard {
   return {
     cardID: `${oracleId}-printing`,
+    index,
     details: {
       name,
       name_lower: name.toLowerCase(),
@@ -99,6 +106,31 @@ describe('diffCubes', () => {
     expect(result.added.map((c) => c.name)).toEqual([
       'Ambush Viper',
       'Zombie Infestation',
+    ]);
+  });
+
+  it('does not double-count a compound-type card duplicated by the same board slot index', () => {
+    // CubeCobra's cubeJSON response emits one entry per matching type category for cards with a
+    // compound type line (e.g. "Enchantment Creature"), so the same physical card can appear twice
+    // in the raw mainboard array while sharing the same `index`.
+    const slot = card('Spirited Companion', 'spirited-companion', 42);
+    const duplicateEntryForSameSlot = { ...slot };
+
+    const result = diffCubes([], [slot, duplicateEntryForSameSlot]);
+
+    expect(result.added).toEqual([
+      expect.objectContaining({ name: 'Spirited Companion', count: 1 }),
+    ]);
+  });
+
+  it('still counts two genuinely different slots of the same card', () => {
+    const result = diffCubes(
+      [],
+      [card('Plains', 'plains', 1), card('Plains', 'plains', 2)],
+    );
+
+    expect(result.added).toEqual([
+      expect.objectContaining({ name: 'Plains', count: 2 }),
     ]);
   });
 });

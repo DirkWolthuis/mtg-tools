@@ -2,6 +2,13 @@
 export interface CubeJsonCard {
   cardID: string;
   board?: string;
+  /**
+   * The card's position/slot within its board. CubeCobra's cubeJSON response duplicates one entry
+   * per matching type category for cards with a compound type line (e.g. "Artifact Creature",
+   * "Enchantment Creature") - both duplicate entries share the same `index`, so it identifies the
+   * physical cube slot and is used to de-duplicate before diffing.
+   */
+  index?: number;
   details?: {
     name: string;
     name_lower?: string;
@@ -9,7 +16,7 @@ export interface CubeJsonCard {
     scryfall_id?: string;
     image_normal?: string;
     image_small?: string;
-    type_line?: string;
+    type?: string;
   };
 }
 

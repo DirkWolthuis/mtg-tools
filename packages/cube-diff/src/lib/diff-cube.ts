@@ -15,12 +15,31 @@ export interface CubeDiff {
   cut: DiffCard[];
 }
 
+/**
+ * De-duplicates cards that share the same board slot (`index`). CubeCobra's cubeJSON response
+ * emits one entry per matching type category for cards with a compound type line (e.g. "Artifact
+ * Creature", "Enchantment Creature"), so the same physical card can otherwise appear twice in the
+ * raw list. Cards without an `index` (should not normally happen) are kept as-is.
+ */
+function dedupeBySlot(cards: CubeJsonCard[]): CubeJsonCard[] {
+  const seenIndexes = new Set<number>();
+  const deduped: CubeJsonCard[] = [];
+  for (const card of cards) {
+    if (card.index != null) {
+      if (seenIndexes.has(card.index)) continue;
+      seenIndexes.add(card.index);
+    }
+    deduped.push(card);
+  }
+  return deduped;
+}
+
 /** Groups a board's cards by identity (oracle id, falling back to lowercased name) and counts copies. */
 function groupByIdentity(
   cards: CubeJsonCard[],
 ): Map<string, { card: CubeJsonCard; count: number }> {
   const groups = new Map<string, { card: CubeJsonCard; count: number }>();
-  for (const card of cards) {
+  for (const card of dedupeBySlot(cards)) {
     const key =
       card.details?.oracle_id ??
       card.details?.name_lower ??
@@ -51,7 +70,9 @@ function toDiffCard(key: string, card: CubeJsonCard, count: number): DiffCard {
  * Diffs the mainboard of two CubeCobra cube snapshots (e.g. the same cube at two different dates).
  * Cards are matched by Scryfall oracle id (falling back to name) so reprints of the same card
  * don't show up as both a cut and an add. Quantity changes for the same card produce a single
- * entry sized to the delta (e.g. going from 2 to 1 copies is one "cut" of count 1).
+ * entry sized to the delta (e.g. going from 2 to 1 copies is one "cut" of count 1). Duplicate
+ * entries for the same board slot (see `dedupeBySlot`) are collapsed before counting, so
+ * compound-type cards aren't double-counted.
  */
 export function diffCubes(
   oldCards: CubeJsonCard[],
