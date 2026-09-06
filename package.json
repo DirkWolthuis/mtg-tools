@@ -2,7 +2,14 @@
   "name": "@org/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "cm:build": "BUILD_ENTRY=content-scripts/seller-offers vite build && BUILD_ENTRY=background/service-worker vite build",
+    "cm:test": "vitest run --config vitest.config.ts",
+    "cm:test:watch": "vitest --config vitest.config.ts",
+    "cd:build": "nx run cube-diff:build",
+    "cd:dev": "nx run cube-diff:dev",
+    "cd:test": "nx run cube-diff:test"
+  },
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
