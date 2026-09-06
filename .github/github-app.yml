@@ -1,0 +1,28 @@
+instructions: |
+  This is an npm workspaces monorepo managed by Nx (packages/*). Always run
+  build/test/lint/typecheck through Nx instead of calling the underlying
+  tooling directly, e.g. `npx nx run <project>:test`, `npx nx run-many -t lint`,
+  or `npx nx affected -t test lint typecheck` for changes across packages.
+  Project names match each package's folder under packages/ (e.g. cube-diff,
+  collection-stats, cardmarket-extension).
+
+scripts:
+  - name: Install dependencies
+    command: npm install --prefer-offline --no-audit --no-fund
+    triggers:
+      - session.create
+  - name: Test affected
+    command: npx nx affected -t test lint typecheck
+  - name: Run cube-diff (dev server)
+    command: npx nx run cube-diff:dev
+  - name: Run collection-stats CLI
+    command: npx nx run collection-stats:start
+  - name: Build cardmarket-extension
+    command: npx nx run cardmarket-extension:build
+
+server_ready_pattern: 'Local:\s+(https?://\S+)'
+auto_open_in_browser: true
+
+automation:
+  auto_issue_session: true
+  remote_control: false
