@@ -14,6 +14,9 @@
     },
     {
       "path": "./packages/cube-diff"
+    },
+    {
+      "path": "./packages/cube-disruption-tagging"
     }
   ],
   "compilerOptions": {}

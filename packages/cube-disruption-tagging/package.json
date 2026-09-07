@@ -1,0 +1,16 @@
+{
+  "name": "@org/cube-disruption-tagging",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "nx": {
+    "name": "cube-disruption-tagging"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "vitest": "4.1.10"
+  }
+}
