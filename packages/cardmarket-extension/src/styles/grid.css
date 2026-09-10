@@ -1,1 +1,15 @@
 @import 'tailwindcss';
+
+/**
+ * Card grid layout. `--offers-grid-columns` is overwriteable per-instance (see
+ * OffersGrid.tsx) so users can pick a fixed number of cards per row; when
+ * unset it falls back to an auto-fit responsive layout.
+ */
+.offers-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(
+    var(--offers-grid-columns, auto-fit),
+    minmax(160px, 1fr)
+  );
+}
