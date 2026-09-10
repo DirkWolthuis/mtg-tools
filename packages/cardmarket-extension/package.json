@@ -8,8 +8,9 @@
   },
   "scripts": {
     "build": "BUILD_ENTRY=content-scripts/seller-offers vite build && BUILD_ENTRY=background/service-worker vite build",
-    "test": "vitest run --config vite.config.mts",
-    "test:watch": "vitest --config vite.config.mts"
+    "dev": "vite --config vite.dev.config.mts",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts"
   },
   "dependencies": {
     "@scryfall/api-types": "^1.0.0-alpha.4",
