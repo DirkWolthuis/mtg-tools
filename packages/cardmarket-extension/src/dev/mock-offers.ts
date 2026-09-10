@@ -1,14 +1,15 @@
 import type { Offer, SpriteIcon } from '../lib/parse-offers.js';
 
 /**
- * A generic 16x11 sprite icon shared by all mock offers.
+ * A generic 16x11 sprite icon shared by mock offers that don't have a
+ * confirmed real sprite position (currently just the set icon).
  *
  * Cardmarket's real icons are positioned slices of a hosted sprite sheet
  * that isn't reachable from a local dev server, so instead we point every
- * icon at the same small inline SVG data URI (a flat colored rectangle).
- * `label`/`position` still vary per icon so the surrounding markup (tooltips,
- * layout, condition badge colors, etc.) can be reviewed like it would with
- * real data.
+ * one of these at the same small inline SVG data URI (a flat colored
+ * rectangle). `label`/`position` still vary per icon so the surrounding
+ * markup (tooltips, layout, etc.) can be reviewed like it would with real
+ * data.
  */
 function mockIcon(label: string, color: string): SpriteIcon {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='16' height='11'><rect width='16' height='11' fill='${color}'/></svg>`;
@@ -21,9 +22,27 @@ function mockIcon(label: string, color: string): SpriteIcon {
   };
 }
 
+// Real Cardmarket sprite sheet - language/foil icons are confirmed slices of
+// this sheet (unlike the set icon above), so use it directly to load correctly.
+const CARDMARKET_SPRITE_SHEET_URL =
+  '//static.cardmarket.com/img/0fa565750d09bba2fc85059ebf12e9ac/spriteSheets/ssMain2.png';
+
+function cardmarketSpriteIcon(
+  label: string,
+  position: string,
+): SpriteIcon {
+  return {
+    imageUrl: CARDMARKET_SPRITE_SHEET_URL,
+    position,
+    width: '16px',
+    height: '16px',
+    label,
+  };
+}
+
 const SET_ICON = mockIcon('Dominaria', '#8a7c5a');
-const LANGUAGE_ICON = mockIcon('English', '#4a6fa5');
-const FOIL_ICON = mockIcon('Foil', '#c9a635');
+const LANGUAGE_ICON = cardmarketSpriteIcon('English', '-16px 0px');
+const FOIL_ICON = cardmarketSpriteIcon('Foil', '-16px -16px');
 
 /** Placeholder card art so the grid has something to render besides the "No image" fallback. */
 function mockImageUrl(seed: string): string {
