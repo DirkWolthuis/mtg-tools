@@ -1,29 +1,38 @@
 import type { Offer } from '../lib/parse-offers.js';
 import { OfferCard } from './OfferCard.js';
+import { OfferCardSkeleton } from './OfferCardSkeleton.js';
 
 export interface OffersGridProps {
   offers: Offer[];
+  /** Shows skeleton placeholders (one per offer) instead of real cards while enrichment is in flight. */
+  isLoading?: boolean;
+  /** Fixed number of cards per row; omit for a responsive auto-fit layout. */
+  columns?: number;
 }
 
-/** Placeholder offers grid - structural layout only, no visual design. */
-export function OffersGrid({ offers }: OffersGridProps) {
+/** CSS Grid based offers grid. Column count is overwriteable via the `--offers-grid-columns` custom property (see styles/grid.css). */
+export function OffersGrid({ offers, isLoading, columns }: OffersGridProps) {
   console.debug(
     '[cardmarket-offers-grid] rendering offers grid with',
     offers,
     'offer(s)',
+    isLoading ? '(loading)' : '',
   );
-  if (offers.length === 0) {
+
+  if (!isLoading && offers.length === 0) {
     return <p data-testid="offers-grid-empty">No offers found.</p>;
   }
 
   return (
     <div
-      className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4"
+      className="offers-grid"
+      style={columns ? { '--offers-grid-columns': columns } : undefined}
       data-testid="offers-grid"
+      aria-busy={isLoading || undefined}
     >
-      {offers.map((offer, index) => (
-        <OfferCard key={index} offer={offer} />
-      ))}
+      {isLoading
+        ? offers.map((_, index) => <OfferCardSkeleton key={index} />)
+        : offers.map((offer, index) => <OfferCard key={index} offer={offer} />)}
     </div>
   );
 }
