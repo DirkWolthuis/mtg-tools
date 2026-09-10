@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "BUILD_ENTRY=content-scripts/seller-offers vite build && BUILD_ENTRY=background/service-worker vite build",
+    "dev": "vite --config vite.dev.config.mts",
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts"
   },
