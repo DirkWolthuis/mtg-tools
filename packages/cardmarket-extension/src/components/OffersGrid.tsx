@@ -25,7 +25,7 @@ export function OffersGrid({ offers, isLoading, columns }: OffersGridProps) {
 
   return (
     <div
-      className="offers-grid"
+      className="offers-grid gap-6"
       style={columns ? { '--offers-grid-columns': columns } : undefined}
       data-testid="offers-grid"
       aria-busy={isLoading || undefined}

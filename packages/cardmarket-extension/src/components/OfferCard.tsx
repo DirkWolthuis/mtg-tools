@@ -38,11 +38,14 @@ function OfferIcon({ icon, invert }: { icon: SpriteIcon; invert?: boolean }) {
 export function Price({ offer }: OfferCardProps) {
   const diff = offer.priceDiffFromAverage;
   return (
-    <span className="text-sm">
-      {offer.priceText}
-      {diff &&
-        ` (${diff.absolute >= 0 ? '+' : ''}${diff.absolute.toFixed(2)} €, ${(diff.percentage * 100).toFixed(0)}%)`}
-    </span>
+    <div className="flex flex-col gap-1">
+      <span className="text-lg">{offer.priceText}</span>
+      {diff && (
+        <span className="text-sm text-base-content/60">
+          {` (${diff.absolute >= 0 ? '+' : ''}${diff.absolute.toFixed(2)} €, ${(diff.percentage * 100).toFixed(0)}%)`}
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -50,7 +53,7 @@ function CubeStats({ offer }: OfferCardProps) {
   const stats = offer.cubeStats;
   if (!stats) return null;
   return (
-    <span className="text-xs text-gray-500">
+    <span className="text-xs text-base-content/60">
       Elo {stats.elo.toFixed(0)} · in {stats.popularity.toFixed(1)}% cubes · (
       {stats.cubeCount})
     </span>
@@ -64,7 +67,7 @@ function Actions({ offer }: OfferCardProps) {
   return (
     <button
       type="button"
-      className="btn"
+      className="btn btn-primary"
       data-testid="offer-card-actions"
       onClick={() => findBuyButton(element)?.click()}
     >
@@ -75,26 +78,18 @@ function Actions({ offer }: OfferCardProps) {
 
 /** Placeholder single-offer card - structural layout only, no visual design. */
 export function OfferCard({ offer }: OfferCardProps) {
-  return (
-    <div className="card bg-base-200 shadow-sm" data-testid="offer-card">
-      <a
-        href={offer.cardUrl}
-        className="cursor-pointer mb-2 flex aspect-5/7 items-center justify-center bg-gray-100"
-      >
-        {offer.imageUrl ? (
-          <img
-            src={offer.imageUrl}
-            alt={offer.name}
-            className="h-full w-full object-contain"
-          />
-        ) : (
-          <span className="text-xs text-gray-400">No image</span>
-        )}
-      </a>
+  const card = (
+    <div className="card bg-base-300 shadow-sm" data-testid="offer-card">
+      <figure>
+        <img src={offer.imageUrl ?? ''} alt={offer.name} />
+      </figure>
+
       <div className="card-body">
         <h2 className="card-title"> {offer.name}</h2>
+        {offer.priceText && <Price offer={offer} />}
+
         {offer.set && (
-          <span className="flex items-center gap-1 text-sm text-gray-600">
+          <span className="flex items-center gap-1 text-sm text-base-content/60">
             <OfferIcon icon={offer.set} invert />
             {offer.set.label}
           </span>
@@ -117,12 +112,55 @@ export function OfferCard({ offer }: OfferCardProps) {
           {offer.foil && <OfferIcon icon={offer.foil} />}
         </div>
         {offer.quantity && (
-          <span className="text-sm text-gray-500">{offer.quantity}</span>
+          <span className="text-sm text-base-content/60">{offer.quantity}</span>
         )}
-        {offer.priceText && <Price offer={offer} />}
         <CubeStats offer={offer} />
         <Actions offer={offer} />
       </div>
     </div>
   );
+
+  const cardLess = (
+    <div>
+      <figure>
+        <img src={offer.imageUrl ?? ''} alt={offer.name} />
+      </figure>
+
+      <div className="flex flex-col">
+        <h2 className="card-title"> {offer.name}</h2>
+        {offer.priceText && <Price offer={offer} />}
+
+        {offer.set && (
+          <span className="flex items-center gap-1 text-sm text-base-content/60">
+            <OfferIcon icon={offer.set} invert />
+            {offer.set.label}
+          </span>
+        )}
+        <div className="mt-1 flex items-center gap-1">
+          {offer.language && <OfferIcon icon={offer.language} />}
+          {offer.condition && (
+            <span
+              title={offer.condition.label}
+              className="rounded px-1 text-xs font-semibold text-white"
+              style={{
+                backgroundColor:
+                  CONDITION_COLORS[offer.condition.abbreviation] ??
+                  FALLBACK_CONDITION_COLOR,
+              }}
+            >
+              {offer.condition.abbreviation}
+            </span>
+          )}
+          {offer.foil && <OfferIcon icon={offer.foil} />}
+        </div>
+        {offer.quantity && (
+          <span className="text-sm text-base-content/60">{offer.quantity}</span>
+        )}
+        <CubeStats offer={offer} />
+        <Actions offer={offer} />
+      </div>
+    </div>
+  );
+
+  return cardLess;
 }

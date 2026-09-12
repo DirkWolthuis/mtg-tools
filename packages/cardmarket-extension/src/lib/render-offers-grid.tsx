@@ -13,7 +13,8 @@ export interface RenderOffersGridOptions {
   onViewChange?: (view: OffersView) => void;
 }
 
-const PROPERTY_REGISTRATIONS_STYLE_ID = 'cardmarket-ext-tw-property-registrations';
+const PROPERTY_REGISTRATIONS_STYLE_ID =
+  'cardmarket-ext-tw-property-registrations';
 
 /**
  * Tailwind v4's compiled CSS declares its internal tokens (`--tw-shadow`,
@@ -63,7 +64,7 @@ export function renderOffersGrid(
     // DaisyUI's theme CSS variables are keyed off `:root`/`[data-theme]`
     // selectors; `:root` never matches inside a shadow tree, so without this
     // attribute none of daisyUI's color variables would resolve here.
-    mount.setAttribute('data-theme', 'light');
+    mount.setAttribute('data-theme', 'dracula');
     shadowRoot.appendChild(mount);
   }
 

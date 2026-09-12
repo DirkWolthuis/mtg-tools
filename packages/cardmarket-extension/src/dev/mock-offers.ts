@@ -1,31 +1,12 @@
 import type { Offer, SpriteIcon } from '../lib/parse-offers.js';
 
-/**
- * A generic 16x11 sprite icon shared by mock offers that don't have a
- * confirmed real sprite position (currently just the set icon).
- *
- * Cardmarket's real icons are positioned slices of a hosted sprite sheet
- * that isn't reachable from a local dev server, so instead we point every
- * one of these at the same small inline SVG data URI (a flat colored
- * rectangle). `label`/`position` still vary per icon so the surrounding
- * markup (tooltips, layout, etc.) can be reviewed like it would with real
- * data.
- */
-function mockIcon(label: string, color: string): SpriteIcon {
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='16' height='11'><rect width='16' height='11' fill='${color}'/></svg>`;
-  return {
-    imageUrl: `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`,
-    position: '0 0',
-    width: '16px',
-    height: '11px',
-    label,
-  };
-}
-
-// Real Cardmarket sprite sheet - language/foil icons are confirmed slices of
-// this sheet (unlike the set icon above), so use it directly to load correctly.
+// Real Cardmarket sprite sheets - language/foil icons are confirmed slices of
+// `ssMain2.png`, and set icons are confirmed slices of `expicons.png`, so use
+// them directly to load correctly.
 const CARDMARKET_SPRITE_SHEET_URL =
   '//static.cardmarket.com/img/0fa565750d09bba2fc85059ebf12e9ac/spriteSheets/ssMain2.png';
+const CARDMARKET_EXPANSION_ICONS_URL =
+  '//static.cardmarket.com/img/a48eb0e4cb94c5b23d24ceb6214535c8/expansionicons/expicons.png';
 
 function cardmarketSpriteIcon(label: string, position: string): SpriteIcon {
   return {
@@ -37,7 +18,21 @@ function cardmarketSpriteIcon(label: string, position: string): SpriteIcon {
   };
 }
 
-const SET_ICON = mockIcon('Dominaria', '#8a7c5a');
+/** A real set icon slice from Cardmarket's expansion icon sprite sheet, e.g. `<span ... style="background-image: url(expicons.png); background-position: -105px -2037px;">`. */
+function cardmarketSetIcon(label: string, position: string): SpriteIcon {
+  return {
+    imageUrl: CARDMARKET_EXPANSION_ICONS_URL,
+    position,
+    width: '21px',
+    height: '21px',
+    label,
+  };
+}
+
+const SET_ICON = cardmarketSetIcon(
+  'Wilds of Eldraine: Extras',
+  '-105px -2037px',
+);
 const LANGUAGE_ICON = cardmarketSpriteIcon('English', '-16px 0px');
 const FOIL_ICON = cardmarketSpriteIcon('Foil', '-16px -16px');
 

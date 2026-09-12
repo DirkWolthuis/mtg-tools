@@ -1,5 +1,14 @@
 @import 'tailwindcss';
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes:
+    light --default,
+    dark --prefersdark,
+    dracula;
+}
+
+[data-offers-grid-mount] {
+  background: #14161b;
+}
 
 /**
  * Card grid layout. `--offers-grid-columns` is overwriteable per-instance (see
@@ -8,7 +17,6 @@
  */
 .offers-grid {
   display: grid;
-  gap: 1rem;
   grid-template-columns: repeat(
     var(--offers-grid-columns, auto-fit),
     minmax(160px, 1fr)
