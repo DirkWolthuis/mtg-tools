@@ -21,6 +21,7 @@
     "@preact/preset-vite": "^2.10.6",
     "@tailwindcss/vite": "^4.3.3",
     "@types/chrome": "^0.0.323",
+    "daisyui": "^5.7.37",
     "jsdom": "^25.0.1",
     "tailwindcss": "^4.3.3"
   }

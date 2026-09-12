@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "cm:build": "nx run cardmarket-extension:build",
+    "cm:dev": "nx run cardmarket-extension:dev",
     "cm:test": "nx run cardmarket-extension:test",
     "cm:test:watch": "nx run cardmarket-extension:test:watch",
     "cd:build": "nx run cube-diff:build",

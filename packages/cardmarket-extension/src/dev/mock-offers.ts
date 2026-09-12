@@ -27,10 +27,7 @@ function mockIcon(label: string, color: string): SpriteIcon {
 const CARDMARKET_SPRITE_SHEET_URL =
   '//static.cardmarket.com/img/0fa565750d09bba2fc85059ebf12e9ac/spriteSheets/ssMain2.png';
 
-function cardmarketSpriteIcon(
-  label: string,
-  position: string,
-): SpriteIcon {
+function cardmarketSpriteIcon(label: string, position: string): SpriteIcon {
   return {
     imageUrl: CARDMARKET_SPRITE_SHEET_URL,
     position,
@@ -84,6 +81,7 @@ export function createMockOffers(): Offer[] {
       cardmarketId: '676516',
       cubeStats: { elo: 1244.6, popularity: 3.26, cubeCount: 11910 },
       priceDiffFromAverage: { absolute: -0.05, percentage: -0.2 },
+      actionsElement: document.createElement('div'),
     }),
     baseOffer({
       name: 'Counterspell',
@@ -96,11 +94,13 @@ export function createMockOffers(): Offer[] {
       condition: { abbreviation: 'EX', label: 'Excellent' },
       foil: FOIL_ICON,
       priceDiffFromAverage: { absolute: 0.3, percentage: 0.25 },
+      actionsElement: document.createElement('div'),
     }),
     baseOffer({
       name: 'Black Lotus (no image, minimal data)',
       cardUrl: '#',
       priceText: '25.000,00 €',
+      actionsElement: document.createElement('div'),
     }),
     baseOffer({
       name: 'Mox Sapphire',
@@ -108,6 +108,7 @@ export function createMockOffers(): Offer[] {
       priceText: '8.000,00 €',
       imageUrl: mockImageUrl('Mox Sapphire'),
       condition: { abbreviation: 'PO', label: 'Poor' },
+      actionsElement: document.createElement('div'),
     }),
     baseOffer({
       name: 'Sol Ring',
@@ -117,6 +118,7 @@ export function createMockOffers(): Offer[] {
       quantity: '10x',
       condition: { abbreviation: 'GD', label: 'Good' },
       language: LANGUAGE_ICON,
+      actionsElement: document.createElement('div'),
     }),
     baseOffer({
       name: 'Ragavan, Nimble Pilferer',
@@ -128,6 +130,7 @@ export function createMockOffers(): Offer[] {
       condition: { abbreviation: 'MT', label: 'Mint' },
       foil: FOIL_ICON,
       cubeStats: { elo: 1620.2, popularity: 22.4, cubeCount: 5400 },
+      actionsElement: document.createElement('div'),
     }),
     baseOffer({
       name: 'Very Long Card Name That Should Wrap Or Truncate Gracefully',
@@ -135,6 +138,7 @@ export function createMockOffers(): Offer[] {
       priceText: '0,05 €',
       imageUrl: mockImageUrl('Long Name'),
       condition: { abbreviation: 'LP', label: 'Lightly Played' },
+      actionsElement: document.createElement('div'),
     }),
     baseOffer({
       name: 'Lightning Bolt',
@@ -144,6 +148,7 @@ export function createMockOffers(): Offer[] {
       quantity: '99x',
       set: SET_ICON,
       condition: { abbreviation: 'PL', label: 'Played' },
+      actionsElement: document.createElement('div'),
     }),
   ];
 }

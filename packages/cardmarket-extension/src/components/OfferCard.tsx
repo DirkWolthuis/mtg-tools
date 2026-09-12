@@ -64,7 +64,7 @@ function Actions({ offer }: OfferCardProps) {
   return (
     <button
       type="button"
-      className="mt-2 cursor-pointer rounded bg-blue-600 px-2 py-1 text-sm text-white"
+      className="btn"
       data-testid="offer-card-actions"
       onClick={() => findBuyButton(element)?.click()}
     >
