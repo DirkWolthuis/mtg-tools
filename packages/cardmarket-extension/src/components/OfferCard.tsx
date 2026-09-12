@@ -76,10 +76,7 @@ function Actions({ offer }: OfferCardProps) {
 /** Placeholder single-offer card - structural layout only, no visual design. */
 export function OfferCard({ offer }: OfferCardProps) {
   return (
-    <div
-      className="flex flex-col border border-gray-300 p-2"
-      data-testid="offer-card"
-    >
+    <div className="card bg-base-200 shadow-sm" data-testid="offer-card">
       <a
         href={offer.cardUrl}
         className="cursor-pointer mb-2 flex aspect-5/7 items-center justify-center bg-gray-100"
@@ -94,38 +91,38 @@ export function OfferCard({ offer }: OfferCardProps) {
           <span className="text-xs text-gray-400">No image</span>
         )}
       </a>
-      <a href={offer.cardUrl} className="font-medium">
-        {offer.name}
-      </a>
-      {offer.set && (
-        <span className="flex items-center gap-1 text-sm text-gray-600">
-          <OfferIcon icon={offer.set} invert />
-          {offer.set.label}
-        </span>
-      )}
-      <div className="mt-1 flex items-center gap-1">
-        {offer.language && <OfferIcon icon={offer.language} />}
-        {offer.condition && (
-          <span
-            title={offer.condition.label}
-            className="rounded px-1 text-xs font-semibold text-white"
-            style={{
-              backgroundColor:
-                CONDITION_COLORS[offer.condition.abbreviation] ??
-                FALLBACK_CONDITION_COLOR,
-            }}
-          >
-            {offer.condition.abbreviation}
+      <div className="card-body">
+        <h2 className="card-title"> {offer.name}</h2>
+        {offer.set && (
+          <span className="flex items-center gap-1 text-sm text-gray-600">
+            <OfferIcon icon={offer.set} invert />
+            {offer.set.label}
           </span>
         )}
-        {offer.foil && <OfferIcon icon={offer.foil} />}
+        <div className="mt-1 flex items-center gap-1">
+          {offer.language && <OfferIcon icon={offer.language} />}
+          {offer.condition && (
+            <span
+              title={offer.condition.label}
+              className="rounded px-1 text-xs font-semibold text-white"
+              style={{
+                backgroundColor:
+                  CONDITION_COLORS[offer.condition.abbreviation] ??
+                  FALLBACK_CONDITION_COLOR,
+              }}
+            >
+              {offer.condition.abbreviation}
+            </span>
+          )}
+          {offer.foil && <OfferIcon icon={offer.foil} />}
+        </div>
+        {offer.quantity && (
+          <span className="text-sm text-gray-500">{offer.quantity}</span>
+        )}
+        {offer.priceText && <Price offer={offer} />}
+        <CubeStats offer={offer} />
+        <Actions offer={offer} />
       </div>
-      {offer.quantity && (
-        <span className="text-sm text-gray-500">{offer.quantity}</span>
-      )}
-      {offer.priceText && <Price offer={offer} />}
-      <CubeStats offer={offer} />
-      <Actions offer={offer} />
     </div>
   );
 }

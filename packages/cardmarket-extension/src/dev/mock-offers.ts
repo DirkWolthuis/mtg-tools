@@ -41,11 +41,6 @@ const SET_ICON = mockIcon('Dominaria', '#8a7c5a');
 const LANGUAGE_ICON = cardmarketSpriteIcon('English', '-16px 0px');
 const FOIL_ICON = cardmarketSpriteIcon('Foil', '-16px -16px');
 
-/** Placeholder card art so the grid has something to render besides the "No image" fallback. */
-function mockImageUrl(seed: string): string {
-  return `https://placehold.co/300x420/png?text=${encodeURIComponent(seed)}`;
-}
-
 function baseOffer(overrides: Partial<Offer>): Offer {
   return {
     name: 'Unnamed Card',
@@ -73,7 +68,8 @@ export function createMockOffers(): Offer[] {
       name: 'Llanowar Elves',
       cardUrl: '/en/Magic/Products/Singles/Dominaria/Llanowar-Elves',
       priceText: '0,20 €',
-      imageUrl: mockImageUrl('Llanowar Elves'),
+      imageUrl:
+        'https://cards.scryfall.io/display/front/6/a/6a0b230b-d391-4998-a3f7-7b158a0ec2cd.webp?1783909057',
       quantity: '4x',
       set: SET_ICON,
       language: LANGUAGE_ICON,
@@ -87,7 +83,8 @@ export function createMockOffers(): Offer[] {
       name: 'Counterspell',
       cardUrl: '/en/Magic/Products/Singles/Masters-25/Counterspell',
       priceText: '1,50 €',
-      imageUrl: mockImageUrl('Counterspell'),
+      imageUrl:
+        'https://cards.scryfall.io/display/front/4/f/4f616706-ec97-4923-bb1e-11a69fbaa1f8.webp?1783909630',
       quantity: '1x',
       set: SET_ICON,
       language: LANGUAGE_ICON,
@@ -101,12 +98,15 @@ export function createMockOffers(): Offer[] {
       cardUrl: '#',
       priceText: '25.000,00 €',
       actionsElement: document.createElement('div'),
+      imageUrl:
+        'https://cards.scryfall.io/display/front/e/a/ea1feac0-d3a7-45eb-9719-1cdaf51ea0b6.webp?1783939328',
     }),
     baseOffer({
       name: 'Mox Sapphire',
       cardUrl: '#',
       priceText: '8.000,00 €',
-      imageUrl: mockImageUrl('Mox Sapphire'),
+      imageUrl:
+        'https://cards.scryfall.io/display/front/9/1/91fdb56b-54d5-4272-8319-505ff987fe9b.webp?1783903215',
       condition: { abbreviation: 'PO', label: 'Poor' },
       actionsElement: document.createElement('div'),
     }),
@@ -114,7 +114,7 @@ export function createMockOffers(): Offer[] {
       name: 'Sol Ring',
       cardUrl: '#',
       priceText: '2,00 €',
-      imageUrl: mockImageUrl('Sol Ring'),
+
       quantity: '10x',
       condition: { abbreviation: 'GD', label: 'Good' },
       language: LANGUAGE_ICON,
@@ -124,7 +124,8 @@ export function createMockOffers(): Offer[] {
       name: 'Ragavan, Nimble Pilferer',
       cardUrl: '#',
       priceText: '45,00 €',
-      imageUrl: mockImageUrl('Ragavan'),
+      imageUrl:
+        'https://cards.scryfall.io/display/front/a/9/a9738cda-adb1-47fb-9f4c-ecd930228c4d.webp?1783926839',
       set: SET_ICON,
       language: LANGUAGE_ICON,
       condition: { abbreviation: 'MT', label: 'Mint' },
@@ -136,7 +137,8 @@ export function createMockOffers(): Offer[] {
       name: 'Very Long Card Name That Should Wrap Or Truncate Gracefully',
       cardUrl: '#',
       priceText: '0,05 €',
-      imageUrl: mockImageUrl('Long Name'),
+      imageUrl:
+        'https://cards.scryfall.io/display/front/1/2/12345678-1234-1234-1234-123456789012.webp?1783926839',
       condition: { abbreviation: 'LP', label: 'Lightly Played' },
       actionsElement: document.createElement('div'),
     }),
@@ -144,7 +146,8 @@ export function createMockOffers(): Offer[] {
       name: 'Lightning Bolt',
       cardUrl: '#',
       priceText: '0,50 €',
-      imageUrl: mockImageUrl('Lightning Bolt'),
+      imageUrl:
+        'https://cards.scryfall.io/display/front/7/6/7673784e-db4b-43a1-8d55-1bb9fc1e284f.webp?1783903008',
       quantity: '99x',
       set: SET_ICON,
       condition: { abbreviation: 'PL', label: 'Played' },
