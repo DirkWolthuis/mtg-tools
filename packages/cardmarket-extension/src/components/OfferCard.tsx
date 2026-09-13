@@ -80,14 +80,63 @@ function Actions({ offer }: OfferCardProps) {
 export function OfferCard({ offer }: OfferCardProps) {
   const card = (
     <div className="card bg-base-300 shadow-sm" data-testid="offer-card">
-      <figure>
-        <img src={offer.imageUrl ?? ''} alt={offer.name} />
-      </figure>
+      <div className="relative">
+        <figure>
+          <img src={offer.imageUrl ?? ''} alt={offer.name} />
+        </figure>
+        <div className="absolute bottom-0 right-0 p-4 flex gap-2">
+          {offer.set && (
+            <div className="badge badge-sm">
+              <span className="flex items-center gap-1">
+                <OfferIcon icon={offer.set} invert />
+                WOE
+              </span>
+            </div>
+          )}
+          {offer.condition && (
+            <div className="badge badge-sm badge-success">
+              <span>{offer.condition.abbreviation}</span>
+            </div>
+          )}
+          {offer.foil && (
+            <div className="badge badge-sm">
+              <OfferIcon icon={offer.foil} />
+            </div>
+          )}
+        </div>
+        {/* <div className="absolute bottom-0 left-0 right-0 backdrop-blur-xs bg-base-200/30 py-3 px-4 grid grid-cols-3">
+          {offer.set && (
+            <span className="flex items-center gap-1 text-sm text-base-content/60">
+              <OfferIcon icon={offer.set} invert />
+              WOE
+            </span>
+          )}
+          {offer.condition && (
+            <span
+              title={offer.condition.label}
+              className="rounded px-1 text-xs font-semibold text-white"
+              style={{
+                backgroundColor:
+                  CONDITION_COLORS[offer.condition.abbreviation] ??
+                  FALLBACK_CONDITION_COLOR,
+              }}
+            >
+              {offer.condition.abbreviation}
+            </span>
+          )}
+          {offer.foil && (
+            <span>
+              <OfferIcon icon={offer.foil} />
+            </span>
+          )}
+        </div> */}
+      </div>
 
       <div className="card-body">
-        <h2 className="card-title"> {offer.name}</h2>
+        <h2 className="card-title">
+          {offer.name} ({offer.quantity})
+        </h2>
         {offer.priceText && <Price offer={offer} />}
-
         {offer.set && (
           <span className="flex items-center gap-1 text-sm text-base-content/60">
             <OfferIcon icon={offer.set} invert />
@@ -96,19 +145,7 @@ export function OfferCard({ offer }: OfferCardProps) {
         )}
         <div className="mt-1 flex items-center gap-1">
           {offer.language && <OfferIcon icon={offer.language} />}
-          {offer.condition && (
-            <span
-              title={offer.condition.label}
-              className="rounded px-1 text-xs font-semibold text-white"
-              style={{
-                backgroundColor:
-                  CONDITION_COLORS[offer.condition.abbreviation] ??
-                  FALLBACK_CONDITION_COLOR,
-              }}
-            >
-              {offer.condition.abbreviation}
-            </span>
-          )}
+
           {offer.foil && <OfferIcon icon={offer.foil} />}
         </div>
         {offer.quantity && (
@@ -120,47 +157,47 @@ export function OfferCard({ offer }: OfferCardProps) {
     </div>
   );
 
-  const cardLess = (
-    <div>
-      <figure>
-        <img src={offer.imageUrl ?? ''} alt={offer.name} />
-      </figure>
+  // const cardLess = (
+  //   <div>
+  //     <figure>
+  //       <img src={offer.imageUrl ?? ''} alt={offer.name} />
+  //     </figure>
 
-      <div className="flex flex-col">
-        <h2 className="card-title"> {offer.name}</h2>
-        {offer.priceText && <Price offer={offer} />}
+  //     <div className="flex flex-col">
+  //       <h2 className="card-title"> {offer.name}</h2>
+  //       {offer.priceText && <Price offer={offer} />}
 
-        {offer.set && (
-          <span className="flex items-center gap-1 text-sm text-base-content/60">
-            <OfferIcon icon={offer.set} invert />
-            {offer.set.label}
-          </span>
-        )}
-        <div className="mt-1 flex items-center gap-1">
-          {offer.language && <OfferIcon icon={offer.language} />}
-          {offer.condition && (
-            <span
-              title={offer.condition.label}
-              className="rounded px-1 text-xs font-semibold text-white"
-              style={{
-                backgroundColor:
-                  CONDITION_COLORS[offer.condition.abbreviation] ??
-                  FALLBACK_CONDITION_COLOR,
-              }}
-            >
-              {offer.condition.abbreviation}
-            </span>
-          )}
-          {offer.foil && <OfferIcon icon={offer.foil} />}
-        </div>
-        {offer.quantity && (
-          <span className="text-sm text-base-content/60">{offer.quantity}</span>
-        )}
-        <CubeStats offer={offer} />
-        <Actions offer={offer} />
-      </div>
-    </div>
-  );
+  //       {offer.set && (
+  //         <span className="flex items-center gap-1 text-sm text-base-content/60">
+  //           <OfferIcon icon={offer.set} invert />
+  //           {offer.set.label}
+  //         </span>
+  //       )}
+  //       <div className="mt-1 flex items-center gap-1">
+  //         {offer.language && <OfferIcon icon={offer.language} />}
+  //         {offer.condition && (
+  //           <span
+  //             title={offer.condition.label}
+  //             className="rounded px-1 text-xs font-semibold text-white"
+  //             style={{
+  //               backgroundColor:
+  //                 CONDITION_COLORS[offer.condition.abbreviation] ??
+  //                 FALLBACK_CONDITION_COLOR,
+  //             }}
+  //           >
+  //             {offer.condition.abbreviation}
+  //           </span>
+  //         )}
+  //         {offer.foil && <OfferIcon icon={offer.foil} />}
+  //       </div>
+  //       {offer.quantity && (
+  //         <span className="text-sm text-base-content/60">{offer.quantity}</span>
+  //       )}
+  //       <CubeStats offer={offer} />
+  //       <Actions offer={offer} />
+  //     </div>
+  //   </div>
+  // );
 
-  return cardLess;
+  return card;
 }
