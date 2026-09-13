@@ -37,12 +37,13 @@ function OfferIcon({ icon, invert }: { icon: SpriteIcon; invert?: boolean }) {
 
 export function Price({ offer }: OfferCardProps) {
   const diff = offer.priceDiffFromAverage;
+  // ${(diff.percentage * 100).toFixed(0)}%)
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-lg">{offer.priceText}</span>
+    <div className="flex gap-2">
+      <span className="text-md text-base-content">{offer.priceText}</span>
       {diff && (
-        <span className="text-sm text-base-content/60">
-          {` (${diff.absolute >= 0 ? '+' : ''}${diff.absolute.toFixed(2)} €, ${(diff.percentage * 100).toFixed(0)}%)`}
+        <span className="badge badge-sm badge-success">
+          {` ${diff.absolute >= 0 ? '+' : ''}${diff.absolute.toFixed(2)} €`}
         </span>
       )}
     </div>
@@ -98,6 +99,11 @@ export function OfferCard({ offer }: OfferCardProps) {
               <span>{offer.condition.abbreviation}</span>
             </div>
           )}
+          {offer.language && (
+            <div className="badge badge-sm">
+              <OfferIcon icon={offer.language} />
+            </div>
+          )}
           {offer.foil && (
             <div className="badge badge-sm">
               <OfferIcon icon={offer.foil} />
@@ -133,26 +139,34 @@ export function OfferCard({ offer }: OfferCardProps) {
       </div>
 
       <div className="card-body">
-        <h2 className="card-title">
-          {offer.name} ({offer.quantity})
+        <h2 className="text-lg font-title font-semibold">
+          {offer.name}{' '}
+          {/* {offer.quantity && (
+            <span className="badge badge-sm badge-accent">
+              {offer.quantity}
+            </span>
+          )} */}
         </h2>
         {offer.priceText && <Price offer={offer} />}
-        {offer.set && (
+        {/* {offer.set && (
           <span className="flex items-center gap-1 text-sm text-base-content/60">
             <OfferIcon icon={offer.set} invert />
             {offer.set.label}
           </span>
-        )}
-        <div className="mt-1 flex items-center gap-1">
+        )} */}
+        {/* <div className="mt-1 flex items-center gap-1">
           {offer.language && <OfferIcon icon={offer.language} />}
 
           {offer.foil && <OfferIcon icon={offer.foil} />}
-        </div>
-        {offer.quantity && (
+        </div> */}
+        {/* {offer.quantity && (
           <span className="text-sm text-base-content/60">{offer.quantity}</span>
-        )}
+        )} */}
+        <div>
+          <Actions offer={offer} />
+        </div>
+        <div className="divider"></div>
         <CubeStats offer={offer} />
-        <Actions offer={offer} />
       </div>
     </div>
   );
