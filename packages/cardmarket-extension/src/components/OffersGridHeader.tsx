@@ -24,6 +24,27 @@ export function OffersGridHeader({
       className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-gray-300 pb-2"
       data-testid="offers-grid-header"
     >
+      <div className="tabs tabs-box">
+        <input
+          type="radio"
+          name="my_tabs_1"
+          className="tab"
+          aria-label="Tab 1"
+        />
+        <input
+          type="radio"
+          name="my_tabs_1"
+          className="tab"
+          aria-label="Tab 2"
+          defaultChecked
+        />
+        <input
+          type="radio"
+          name="my_tabs_1"
+          className="tab"
+          aria-label="Tab 3"
+        />
+      </div>
       <div
         role="tablist"
         aria-label="Offers layout"
