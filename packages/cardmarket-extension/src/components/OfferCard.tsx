@@ -79,10 +79,16 @@ function Actions({ offer }: OfferCardProps) {
 /** Placeholder single-offer card - structural layout only, no visual design. */
 export function OfferCard({ offer }: OfferCardProps) {
   const card = (
-    <div className="space-y-4" data-testid="offer-card">
+    <div className="flex h-full flex-col space-y-4" data-testid="offer-card">
       <div className="relative">
-        <figure>
-          <img src={offer.imageUrl ?? ''} alt={offer.name} />
+        <figure className="aspect-5/7 overflow-hidden bg-base-200">
+          {offer.imageUrl && (
+            <img
+              src={offer.imageUrl}
+              alt={offer.name}
+              className="h-full w-full object-cover"
+            />
+          )}
         </figure>
         <div className="absolute bottom-0 left-0 right-0 p-4 flex gap-2 flex-wrap justify-end">
           {offer.set && (
@@ -111,16 +117,24 @@ export function OfferCard({ offer }: OfferCardProps) {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="space-y-8">
-          <div className="space-y-2">
-            <h2 className="text-base font-title font-semibold">{offer.name}</h2>
-            {offer.priceText && <Price offer={offer} />}
-          </div>
-
-          <Actions offer={offer} />
+      <div className="flex flex-1 flex-col">
+        <div className="mb-4">
+          <h2 className="text-base font-title font-semibold">{offer.name}</h2>
+          {offer.priceText && (
+            <div className="mt-2">
+              <Price offer={offer} />
+            </div>
+          )}
         </div>
-        <CubeStats offer={offer} />
+
+        {/* Grows to fill any leftover vertical space so the Add button lines up across cards regardless of title/price length. */}
+        <div className="flex-1" />
+
+        <Actions offer={offer} />
+        {/* Fixed-height slot (present whether or not cube stats exist) so the row below Actions never shifts card-to-card. */}
+        <div className="mt-2 h-4">
+          <CubeStats offer={offer} />
+        </div>
       </div>
     </div>
   );
