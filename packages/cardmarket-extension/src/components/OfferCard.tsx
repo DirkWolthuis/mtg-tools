@@ -55,8 +55,7 @@ function CubeStats({ offer }: OfferCardProps) {
   if (!stats) return null;
   return (
     <span className="text-xs text-base-content/60">
-      Elo {stats.elo.toFixed(0)} · in {stats.popularity.toFixed(1)}% cubes · (
-      {stats.cubeCount})
+      {stats.elo.toFixed(0)} elo · {stats.popularity.toFixed(1)}% of cubes
     </span>
   );
 }
@@ -80,7 +79,7 @@ function Actions({ offer }: OfferCardProps) {
 /** Placeholder single-offer card - structural layout only, no visual design. */
 export function OfferCard({ offer }: OfferCardProps) {
   const card = (
-    <div className="card bg-base-300 shadow-sm" data-testid="offer-card">
+    <div className="space-y-4" data-testid="offer-card">
       <div className="relative">
         <figure>
           <img src={offer.imageUrl ?? ''} alt={offer.name} />
@@ -110,114 +109,21 @@ export function OfferCard({ offer }: OfferCardProps) {
             </div>
           )}
         </div>
-        {/* <div className="absolute bottom-0 left-0 right-0 backdrop-blur-xs bg-base-200/30 py-3 px-4 grid grid-cols-3">
-          {offer.set && (
-            <span className="flex items-center gap-1 text-sm text-base-content/60">
-              <OfferIcon icon={offer.set} invert />
-              WOE
-            </span>
-          )}
-          {offer.condition && (
-            <span
-              title={offer.condition.label}
-              className="rounded px-1 text-xs font-semibold text-white"
-              style={{
-                backgroundColor:
-                  CONDITION_COLORS[offer.condition.abbreviation] ??
-                  FALLBACK_CONDITION_COLOR,
-              }}
-            >
-              {offer.condition.abbreviation}
-            </span>
-          )}
-          {offer.foil && (
-            <span>
-              <OfferIcon icon={offer.foil} />
-            </span>
-          )}
-        </div> */}
       </div>
 
-      <div className="p-4 space-y-2">
-        <div className="space-y-8 flex-col content-between">
+      <div className="space-y-2">
+        <div className="space-y-8">
           <div className="space-y-2">
-            <h2 className="text-base font-title font-semibold">
-              {offer.name}
-              {/* {offer.quantity && (
-            <span className="badge badge-sm badge-accent">
-              {offer.quantity}
-            </span>
-          )} */}
-            </h2>
+            <h2 className="text-base font-title font-semibold">{offer.name}</h2>
             {offer.priceText && <Price offer={offer} />}
           </div>
 
-          {/* {offer.set && (
-          <span className="flex items-center gap-1 text-sm text-base-content/60">
-            <OfferIcon icon={offer.set} invert />
-            {offer.set.label}
-          </span>
-        )} */}
-          {/* <div className="mt-1 flex items-center gap-1">
-          {offer.language && <OfferIcon icon={offer.language} />}
-
-          {offer.foil && <OfferIcon icon={offer.foil} />}
-        </div> */}
-          {/* {offer.quantity && (
-          <span className="text-sm text-base-content/60">{offer.quantity}</span>
-        )} */}
-
           <Actions offer={offer} />
         </div>
-        {/* <div>
-          <div className="divider m-0"></div>
-          <CubeStats offer={offer} />
-        </div> */}
+        <CubeStats offer={offer} />
       </div>
     </div>
   );
-
-  // const cardLess = (
-  //   <div>
-  //     <figure>
-  //       <img src={offer.imageUrl ?? ''} alt={offer.name} />
-  //     </figure>
-
-  //     <div className="flex flex-col">
-  //       <h2 className="card-title"> {offer.name}</h2>
-  //       {offer.priceText && <Price offer={offer} />}
-
-  //       {offer.set && (
-  //         <span className="flex items-center gap-1 text-sm text-base-content/60">
-  //           <OfferIcon icon={offer.set} invert />
-  //           {offer.set.label}
-  //         </span>
-  //       )}
-  //       <div className="mt-1 flex items-center gap-1">
-  //         {offer.language && <OfferIcon icon={offer.language} />}
-  //         {offer.condition && (
-  //           <span
-  //             title={offer.condition.label}
-  //             className="rounded px-1 text-xs font-semibold text-white"
-  //             style={{
-  //               backgroundColor:
-  //                 CONDITION_COLORS[offer.condition.abbreviation] ??
-  //                 FALLBACK_CONDITION_COLOR,
-  //             }}
-  //           >
-  //             {offer.condition.abbreviation}
-  //           </span>
-  //         )}
-  //         {offer.foil && <OfferIcon icon={offer.foil} />}
-  //       </div>
-  //       {offer.quantity && (
-  //         <span className="text-sm text-base-content/60">{offer.quantity}</span>
-  //       )}
-  //       <CubeStats offer={offer} />
-  //       <Actions offer={offer} />
-  //     </div>
-  //   </div>
-  // );
 
   return card;
 }
