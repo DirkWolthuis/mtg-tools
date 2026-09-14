@@ -40,7 +40,7 @@ export function Price({ offer }: OfferCardProps) {
   // ${(diff.percentage * 100).toFixed(0)}%)
   return (
     <div className="flex gap-2">
-      <span className="text-md text-base-content">{offer.priceText}</span>
+      <span className="text-sm text-base-content">{offer.priceText}</span>
       {diff && (
         <span className="badge badge-sm badge-success">
           {` ${diff.absolute >= 0 ? '+' : ''}${diff.absolute.toFixed(2)} €`}
@@ -68,7 +68,7 @@ function Actions({ offer }: OfferCardProps) {
   return (
     <button
       type="button"
-      className="btn btn-primary"
+      className="btn btn-soft btn-primary w-full"
       data-testid="offer-card-actions"
       onClick={() => findBuyButton(element)?.click()}
     >
@@ -85,7 +85,7 @@ export function OfferCard({ offer }: OfferCardProps) {
         <figure>
           <img src={offer.imageUrl ?? ''} alt={offer.name} />
         </figure>
-        <div className="absolute bottom-0 right-0 p-4 flex gap-2">
+        <div className="absolute bottom-0 left-0 right-0 p-4 flex gap-2 flex-wrap justify-end">
           {offer.set && (
             <div className="badge badge-sm">
               <span className="flex items-center gap-1">
@@ -138,35 +138,41 @@ export function OfferCard({ offer }: OfferCardProps) {
         </div> */}
       </div>
 
-      <div className="card-body">
-        <h2 className="text-lg font-title font-semibold">
-          {offer.name}{' '}
-          {/* {offer.quantity && (
+      <div className="p-4 space-y-2">
+        <div className="space-y-8 flex-col content-between">
+          <div className="space-y-2">
+            <h2 className="text-base font-title font-semibold">
+              {offer.name}
+              {/* {offer.quantity && (
             <span className="badge badge-sm badge-accent">
               {offer.quantity}
             </span>
           )} */}
-        </h2>
-        {offer.priceText && <Price offer={offer} />}
-        {/* {offer.set && (
+            </h2>
+            {offer.priceText && <Price offer={offer} />}
+          </div>
+
+          {/* {offer.set && (
           <span className="flex items-center gap-1 text-sm text-base-content/60">
             <OfferIcon icon={offer.set} invert />
             {offer.set.label}
           </span>
         )} */}
-        {/* <div className="mt-1 flex items-center gap-1">
+          {/* <div className="mt-1 flex items-center gap-1">
           {offer.language && <OfferIcon icon={offer.language} />}
 
           {offer.foil && <OfferIcon icon={offer.foil} />}
         </div> */}
-        {/* {offer.quantity && (
+          {/* {offer.quantity && (
           <span className="text-sm text-base-content/60">{offer.quantity}</span>
         )} */}
-        <div>
+
           <Actions offer={offer} />
         </div>
-        <div className="divider"></div>
-        <CubeStats offer={offer} />
+        {/* <div>
+          <div className="divider m-0"></div>
+          <CubeStats offer={offer} />
+        </div> */}
       </div>
     </div>
   );
