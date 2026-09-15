@@ -61,17 +61,17 @@ export function OffersSettingsMenu({
       <div
         tabIndex={0}
         role="button"
-        className="btn"
+        className="btn mb-2"
         data-testid="offers-settings-menu-trigger"
         aria-label="Grid settings"
       >
         Settings
       </div>
       <div
-        tabIndex={0}
+        tabIndex={-1}
         className="dropdown-content card card-sm z-10 w-72 bg-base-100 shadow-md"
       >
-        <div className="card-body">
+        <div className="card-body gap-0">
           <fieldset
             className="fieldset"
             data-testid="offers-grid-columns-control"
@@ -112,7 +112,7 @@ export function OffersSettingsMenu({
               Auto
             </label>
           </fieldset>
-          <div className="divider" />
+          <div className="divider my-2" />
           <fieldset className="fieldset" data-testid="offers-grid-gap-control">
             <legend className="fieldset-legend flex w-full items-center justify-between">
               <span>Gap</span>
@@ -149,7 +149,7 @@ export function OffersSettingsMenu({
               Auto
             </label>
           </fieldset>
-          <div className="divider" />
+          <div className="divider my-2" />
           <label
             className="label cursor-pointer justify-between"
             data-testid="offers-cube-stats-control"
