@@ -8,10 +8,20 @@ export interface OffersGridProps {
   isLoading?: boolean;
   /** Fixed number of cards per row; omit for a responsive auto-fit layout. */
   columns?: number;
+  /** Gap between cards in pixels. */
+  gap?: number;
+  /** Whether to show each card's cube stats (elo/popularity), when available. */
+  showCubeStats?: boolean;
 }
 
-/** CSS Grid based offers grid. Column count is overwriteable via the `--offers-grid-columns` custom property (see styles/grid.css). */
-export function OffersGrid({ offers, isLoading, columns }: OffersGridProps) {
+/** CSS Grid based offers grid. Column count and gap are overwriteable via CSS custom properties (see styles/grid.css). */
+export function OffersGrid({
+  offers,
+  isLoading,
+  columns,
+  gap,
+  showCubeStats,
+}: OffersGridProps) {
   console.debug(
     '[cardmarket-offers-grid] rendering offers grid with',
     offers,
@@ -25,14 +35,25 @@ export function OffersGrid({ offers, isLoading, columns }: OffersGridProps) {
 
   return (
     <div
-      className="offers-grid gap-6"
-      style={columns ? { '--offers-grid-columns': columns } : undefined}
+      className="offers-grid"
+      style={{
+        ...(columns ? { '--offers-grid-columns': columns } : undefined),
+        ...(gap !== undefined
+          ? { '--offers-grid-gap': `${gap}px` }
+          : undefined),
+      }}
       data-testid="offers-grid"
       aria-busy={isLoading || undefined}
     >
       {isLoading
         ? offers.map((_, index) => <OfferCardSkeleton key={index} />)
-        : offers.map((offer, index) => <OfferCard key={index} offer={offer} />)}
+        : offers.map((offer, index) => (
+            <OfferCard
+              key={index}
+              offer={offer}
+              showCubeStats={showCubeStats}
+            />
+          ))}
     </div>
   );
 }

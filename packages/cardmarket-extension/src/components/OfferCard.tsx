@@ -3,6 +3,8 @@ import { findBuyButton } from '../lib/parse-offers.js';
 
 export interface OfferCardProps {
   offer: Offer;
+  /** Whether to render the cube stats slot (elo/popularity), when available. Defaults to true. */
+  showCubeStats?: boolean;
 }
 
 // Background colors per Cardmarket's official condition scale (see
@@ -77,11 +79,11 @@ function Actions({ offer }: OfferCardProps) {
 }
 
 /** Placeholder single-offer card - structural layout only, no visual design. */
-export function OfferCard({ offer }: OfferCardProps) {
+export function OfferCard({ offer, showCubeStats = true }: OfferCardProps) {
   const card = (
     <div className="flex h-full flex-col space-y-4" data-testid="offer-card">
       <div className="relative">
-        <figure className="aspect-5/7 overflow-hidden bg-base-200">
+        <figure className="aspect-5/7 overflow-hidden">
           {offer.imageUrl && (
             <img
               src={offer.imageUrl}
@@ -133,7 +135,7 @@ export function OfferCard({ offer }: OfferCardProps) {
         <Actions offer={offer} />
         {/* Fixed-height slot (present whether or not cube stats exist) so the row below Actions never shifts card-to-card. */}
         <div className="mt-2 h-4">
-          <CubeStats offer={offer} />
+          {showCubeStats && <CubeStats offer={offer} />}
         </div>
       </div>
     </div>

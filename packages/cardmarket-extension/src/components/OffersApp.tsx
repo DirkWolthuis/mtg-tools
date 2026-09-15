@@ -5,6 +5,8 @@ import { OffersGridHeader, type OffersView } from './OffersGridHeader.js';
 
 const VIEW_STORAGE_KEY = 'cardmarket-offers-grid:view';
 const COLUMNS_STORAGE_KEY = 'cardmarket-offers-grid:columns';
+const GAP_STORAGE_KEY = 'cardmarket-offers-grid:gap';
+const CUBE_STATS_STORAGE_KEY = 'cardmarket-offers-grid:show-cube-stats';
 
 function readStoredView(): OffersView {
   try {
@@ -27,6 +29,25 @@ function readStoredColumns(): number | undefined {
   }
 }
 
+function readStoredGap(): number | undefined {
+  try {
+    const stored = localStorage.getItem(GAP_STORAGE_KEY);
+    if (!stored) return undefined;
+    const parsed = Number(stored);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function readStoredShowCubeStats(): boolean {
+  try {
+    return localStorage.getItem(CUBE_STATS_STORAGE_KEY) !== 'false';
+  } catch {
+    return true;
+  }
+}
+
 export interface OffersAppProps {
   offers: Offer[];
   isLoading?: boolean;
@@ -34,11 +55,13 @@ export interface OffersAppProps {
   onViewChange?: (view: OffersView) => void;
 }
 
-/** Top-level offers UI: layout tabs (grid/table) + column override, wrapping the card grid itself. */
+/** Top-level offers UI: layout tabs (grid/table) + settings (columns, gap, cube stats), wrapping the card grid itself. */
 export function OffersApp({ offers, isLoading, onViewChange }: OffersAppProps) {
   const [view, setView] = useState<OffersView>(readStoredView);
-  const [columns, setColumns] = useState<number | undefined>(
-    readStoredColumns,
+  const [columns, setColumns] = useState<number | undefined>(readStoredColumns);
+  const [gap, setGap] = useState<number | undefined>(readStoredGap);
+  const [showCubeStats, setShowCubeStats] = useState<boolean>(
+    readStoredShowCubeStats,
   );
 
   useEffect(() => {
@@ -62,6 +85,26 @@ export function OffersApp({ offers, isLoading, onViewChange }: OffersAppProps) {
     }
   }, [columns]);
 
+  useEffect(() => {
+    try {
+      if (gap !== undefined) {
+        localStorage.setItem(GAP_STORAGE_KEY, String(gap));
+      } else {
+        localStorage.removeItem(GAP_STORAGE_KEY);
+      }
+    } catch {
+      // see above
+    }
+  }, [gap]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CUBE_STATS_STORAGE_KEY, String(showCubeStats));
+    } catch {
+      // see above
+    }
+  }, [showCubeStats]);
+
   return (
     <div data-testid="offers-app">
       <OffersGridHeader
@@ -69,10 +112,20 @@ export function OffersApp({ offers, isLoading, onViewChange }: OffersAppProps) {
         onViewChange={setView}
         columns={columns}
         onColumnsChange={setColumns}
+        gap={gap}
+        onGapChange={setGap}
+        showCubeStats={showCubeStats}
+        onShowCubeStatsChange={setShowCubeStats}
         isLoading={isLoading}
       />
       {view === 'grid' && (
-        <OffersGrid offers={offers} isLoading={isLoading} columns={columns} />
+        <OffersGrid
+          offers={offers}
+          isLoading={isLoading}
+          columns={columns}
+          gap={gap}
+          showCubeStats={showCubeStats}
+        />
       )}
     </div>
   );

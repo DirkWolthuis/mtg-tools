@@ -21,4 +21,5 @@
     var(--offers-grid-columns, auto-fit),
     minmax(160px, 1fr)
   );
+  gap: var(--offers-grid-gap, 24px);
 }
