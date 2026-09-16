@@ -106,7 +106,7 @@ export function OffersApp({ offers, isLoading, onViewChange }: OffersAppProps) {
   }, [showCubeStats]);
 
   return (
-    <div data-testid="offers-app">
+    <div className="py-4" data-testid="offers-app">
       <OffersGridHeader
         view={view}
         onViewChange={setView}
@@ -118,6 +118,7 @@ export function OffersApp({ offers, isLoading, onViewChange }: OffersAppProps) {
         onShowCubeStatsChange={setShowCubeStats}
         isLoading={isLoading}
       />
+      <div className="divider"></div>
       {view === 'grid' && (
         <OffersGrid
           offers={offers}

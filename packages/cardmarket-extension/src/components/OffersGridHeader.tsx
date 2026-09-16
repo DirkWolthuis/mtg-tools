@@ -28,7 +28,7 @@ export function OffersGridHeader({
 }: OffersGridHeaderProps) {
   return (
     <div
-      className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-base-300 pb-2"
+      className="flex flex-wrap items-center justify-between gap-2"
       data-testid="offers-grid-header"
     >
       <div

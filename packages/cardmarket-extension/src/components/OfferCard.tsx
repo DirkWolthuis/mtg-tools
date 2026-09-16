@@ -92,7 +92,7 @@ export function OfferCard({ offer, showCubeStats = true }: OfferCardProps) {
             />
           )}
         </figure>
-        <div className="absolute bottom-0 left-0 right-0 p-4 flex gap-2 flex-wrap justify-end">
+        <div className="absolute inset-x-0 bottom-0 p-4 flex flex-row-reverse flex-wrap-reverse content-end gap-2">
           {offer.set && (
             <div className="badge badge-sm">
               <span className="flex items-center gap-1">
@@ -102,7 +102,17 @@ export function OfferCard({ offer, showCubeStats = true }: OfferCardProps) {
             </div>
           )}
           {offer.condition && (
-            <div className="badge badge-sm badge-success">
+            <div
+              className="badge badge-sm"
+              style={{
+                borderColor:
+                  CONDITION_COLORS[offer.condition.abbreviation] ??
+                  FALLBACK_CONDITION_COLOR,
+                backgroundColor:
+                  CONDITION_COLORS[offer.condition.abbreviation] ??
+                  FALLBACK_CONDITION_COLOR,
+              }}
+            >
               <span>{offer.condition.abbreviation}</span>
             </div>
           )}

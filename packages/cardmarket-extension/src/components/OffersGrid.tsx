@@ -39,7 +39,7 @@ export function OffersGrid({
       style={{
         ...(columns ? { '--offers-grid-columns': columns } : undefined),
         ...(gap !== undefined
-          ? { '--offers-grid-gap': `${gap}px` }
+          ? { '--offers-grid-gap': `${gap * 1.2}px ${gap}px` }
           : undefined),
       }}
       data-testid="offers-grid"
