@@ -1,5 +1,6 @@
 import type { Offer, SpriteIcon } from '../lib/parse-offers.js';
 import { findBuyButton } from '../lib/parse-offers.js';
+import { PriceDiffFromAverage } from '../lib/post-process-scryfall-card.js';
 
 export interface OfferCardProps {
   offer: Offer;
@@ -49,12 +50,25 @@ export function Price({ offer }: OfferCardProps) {
           }).format(price.amount)}
         </span>
       )}
-      {diff && (
-        <span className="badge badge-sm badge-success">
-          {` ${diff.absolute >= 0 ? '+' : ''}${diff.absolute.toFixed(2)} €`}
-        </span>
-      )}
+      {diff && <PriceDiff priceDiffFromAverage={diff} />}
     </div>
+  );
+}
+
+export function PriceDiff({
+  priceDiffFromAverage,
+}: {
+  priceDiffFromAverage: PriceDiffFromAverage;
+}) {
+  const diff = priceDiffFromAverage;
+  const diffPositive = diff.absolute >= 0;
+
+  return (
+    <span
+      className={`badge badge-sm ${diffPositive ? 'badge-error' : 'badge-success'}`}
+    >
+      €{` ${diffPositive ? '+' : '-'}${Math.abs(diff.absolute).toFixed(2)} `}
+    </span>
   );
 }
 
