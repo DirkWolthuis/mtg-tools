@@ -2,12 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from 'preact/test-utils';
 import { renderOffersGrid } from './render-offers-grid.js';
 import type { Offer } from './parse-offers.js';
+import { parsePrice } from './parse-offers.js';
 
 function buildOffer(overrides: Partial<Offer> = {}): Offer {
   return {
     name: 'Llanowar Elves',
     cardUrl: '/en/Magic/Products/Singles/Dominaria/Llanowar-Elves',
-    priceText: '0,20 €',
+    price: parsePrice('0,20 €'),
     imageUrl: null,
     quantity: null,
     set: null,

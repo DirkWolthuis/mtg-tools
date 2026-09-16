@@ -1,4 +1,5 @@
-import type { Offer, SpriteIcon } from '../lib/parse-offers.js';
+import type { CardSet, Offer, SpriteIcon } from '../lib/parse-offers.js';
+import { parsePrice } from '../lib/parse-offers.js';
 
 // Real Cardmarket sprite sheets - language/foil icons are confirmed slices of
 // `ssMain2.png`, and set icons are confirmed slices of `expicons.png`, so use
@@ -19,19 +20,21 @@ function cardmarketSpriteIcon(label: string, position: string): SpriteIcon {
 }
 
 /** A real set icon slice from Cardmarket's expansion icon sprite sheet, e.g. `<span ... style="background-image: url(expicons.png); background-position: -105px -2037px;">`. */
-function cardmarketSetIcon(label: string, position: string): SpriteIcon {
+function cardmarketSetIcon(label: string, position: string, code: string): CardSet {
   return {
     imageUrl: CARDMARKET_EXPANSION_ICONS_URL,
     position,
     width: '21px',
     height: '21px',
     label,
+    code,
   };
 }
 
 const SET_ICON = cardmarketSetIcon(
   'Wilds of Eldraine: Extras',
   '-105px -2037px',
+  'WOE',
 );
 const LANGUAGE_ICON = cardmarketSpriteIcon('English', '-16px 0px');
 const FOIL_ICON = cardmarketSpriteIcon('Foil', '-16px -16px');
@@ -40,7 +43,7 @@ function baseOffer(overrides: Partial<Offer>): Offer {
   return {
     name: 'Unnamed Card',
     cardUrl: '#',
-    priceText: null,
+    price: null,
     imageUrl: null,
     quantity: null,
     set: null,
@@ -62,7 +65,7 @@ export function createMockOffers(): Offer[] {
     baseOffer({
       name: 'Llanowar Elves',
       cardUrl: '/en/Magic/Products/Singles/Dominaria/Llanowar-Elves',
-      priceText: '0,20 €',
+      price: parsePrice('0,20 €'),
       imageUrl:
         'https://cards.scryfall.io/display/front/6/a/6a0b230b-d391-4998-a3f7-7b158a0ec2cd.webp?1783909057',
       quantity: '4x',
@@ -77,7 +80,7 @@ export function createMockOffers(): Offer[] {
     baseOffer({
       name: 'Counterspell',
       cardUrl: '/en/Magic/Products/Singles/Masters-25/Counterspell',
-      priceText: '1,50 €',
+      price: parsePrice('1,50 €'),
       imageUrl:
         'https://cards.scryfall.io/display/front/4/f/4f616706-ec97-4923-bb1e-11a69fbaa1f8.webp?1783909630',
       quantity: '1x',
@@ -91,7 +94,7 @@ export function createMockOffers(): Offer[] {
     baseOffer({
       name: 'Black Lotus (no image, minimal data)',
       cardUrl: '#',
-      priceText: '25.000,00 €',
+      price: parsePrice('25.000,00 €'),
       actionsElement: document.createElement('div'),
       imageUrl:
         'https://cards.scryfall.io/display/front/e/a/ea1feac0-d3a7-45eb-9719-1cdaf51ea0b6.webp?1783939328',
@@ -99,7 +102,7 @@ export function createMockOffers(): Offer[] {
     baseOffer({
       name: 'Mox Sapphire',
       cardUrl: '#',
-      priceText: '8.000,00 €',
+      price: parsePrice('8.000,00 €'),
       imageUrl:
         'https://cards.scryfall.io/display/front/9/1/91fdb56b-54d5-4272-8319-505ff987fe9b.webp?1783903215',
       condition: { abbreviation: 'PO', label: 'Poor' },
@@ -108,7 +111,7 @@ export function createMockOffers(): Offer[] {
     baseOffer({
       name: 'Sol Ring',
       cardUrl: '#',
-      priceText: '2,00 €',
+      price: parsePrice('2,00 €'),
 
       quantity: '10x',
       condition: { abbreviation: 'GD', label: 'Good' },
@@ -118,7 +121,7 @@ export function createMockOffers(): Offer[] {
     baseOffer({
       name: 'Ragavan, Nimble Pilferer',
       cardUrl: '#',
-      priceText: '45,00 €',
+      price: parsePrice('45,00 €'),
       imageUrl:
         'https://cards.scryfall.io/display/front/a/9/a9738cda-adb1-47fb-9f4c-ecd930228c4d.webp?1783926839',
       set: SET_ICON,
@@ -131,7 +134,7 @@ export function createMockOffers(): Offer[] {
     baseOffer({
       name: 'Very Long Card Name That Should Wrap Or Truncate Gracefully',
       cardUrl: '#',
-      priceText: '0,05 €',
+      price: parsePrice('0,05 €'),
       imageUrl:
         'https://cards.scryfall.io/display/front/1/2/12345678-1234-1234-1234-123456789012.webp?1783926839',
       condition: { abbreviation: 'LP', label: 'Lightly Played' },
@@ -140,7 +143,7 @@ export function createMockOffers(): Offer[] {
     baseOffer({
       name: 'Lightning Bolt',
       cardUrl: '#',
-      priceText: '0,50 €',
+      price: parsePrice('0,50 €'),
       imageUrl:
         'https://cards.scryfall.io/display/front/7/6/7673784e-db4b-43a1-8d55-1bb9fc1e284f.webp?1783903008',
       quantity: '99x',

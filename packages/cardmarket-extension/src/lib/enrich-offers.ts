@@ -83,7 +83,19 @@ export async function enrichOffersWithScryfallData(
       offer,
       scryfallCard,
     );
-    enriched.push({ ...offer, scryfallCard, priceDiffFromAverage, cubeStats });
+    // Cardmarket's page doesn't expose the set's official abbreviation, only
+    // its full name - fill it in from Scryfall's set code once available.
+    const set =
+      offer.set && scryfallCard?.set
+        ? { ...offer.set, code: scryfallCard.set.toUpperCase() }
+        : offer.set;
+    enriched.push({
+      ...offer,
+      set,
+      scryfallCard,
+      priceDiffFromAverage,
+      cubeStats,
+    });
   }
   return enriched;
 }

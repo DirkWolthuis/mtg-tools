@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { findBuyButton, parseOffers } from './parse-offers.js';
+import { findBuyButton, parseOffers, parsePrice } from './parse-offers.js';
 
 function buildTable(rowsHtml: string): HTMLElement {
   const doc = new DOMParser().parseFromString(
@@ -34,7 +34,7 @@ describe('parseOffers', () => {
       {
         name: 'Llanowar Elves',
         cardUrl: '/en/Magic/Products/Singles/Dominaria/Llanowar-Elves',
-        priceText: '0,20 €',
+        price: parsePrice('0,20 €'),
         imageUrl: 'https://example.com/llanowar-elves.jpg',
         quantity: '3x',
         set: null,
@@ -64,7 +64,7 @@ describe('parseOffers', () => {
       {
         name: 'Counterspell',
         cardUrl: '/en/Magic/Products/Singles/Alpha/Counterspell',
-        priceText: null,
+        price: null,
         imageUrl: null,
         quantity: null,
         set: null,
@@ -107,7 +107,7 @@ describe('parseOffers', () => {
       {
         name: 'Abrupt Decay',
         cardUrl: '/en/Magic/Products/Singles/Breaking-News/Abrupt-Decay',
-        priceText: '0,45 €',
+        price: parsePrice('0,45 €'),
         imageUrl: null,
         quantity: null,
         set: {
@@ -116,6 +116,7 @@ describe('parseOffers', () => {
           width: '21px',
           height: '21px',
           label: 'Breaking News',
+          code: null,
         },
         language: {
           imageUrl: '//static.cardmarket.com/img/ssMain2.png',
@@ -179,7 +180,7 @@ describe('parseOffers', () => {
       {
         name: 'Brims Barone',
         cardUrl: '/en/Magic/Products/Singles/Unfinity/Brims-Barone',
-        priceText: '1,00 €',
+        price: parsePrice('1,00 €'),
         imageUrl:
           'https://product-images.s3.cardmarket.com/1/XUNF/676516/676516.jpg',
         quantity: '1',
@@ -272,5 +273,30 @@ describe('findBuyButton', () => {
     if (!actionsElement) throw new Error('expected fixture element');
 
     expect(findBuyButton(actionsElement)).toBeNull();
+  });
+});
+
+describe('parsePrice', () => {
+  it('parses simple decimal-comma prices as EUR by default', () => {
+    expect(parsePrice('0,20 €')).toEqual({ amount: 0.2, currency: 'EUR' });
+  });
+
+  it('parses prices with a thousands separator', () => {
+    expect(parsePrice('1.234,56 €')).toEqual({
+      amount: 1234.56,
+      currency: 'EUR',
+    });
+  });
+
+  it('detects USD from the $ symbol', () => {
+    expect(parsePrice('$1,50')).toEqual({ amount: 1.5, currency: 'USD' });
+  });
+
+  it('returns null for null input', () => {
+    expect(parsePrice(null)).toBeNull();
+  });
+
+  it('returns null for unparseable input', () => {
+    expect(parsePrice('n/a')).toBeNull();
   });
 });

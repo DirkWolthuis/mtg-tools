@@ -24,6 +24,14 @@ const BUY_BUTTON_SELECTOR = 'form button[type="submit"]';
 // Cardmarket's product image CDN path repeats the numeric cardmarket id (`idProduct`)
 // as both a directory segment and the filename, e.g. `.../676516/676516.jpg`.
 const CARDMARKET_ID_FROM_IMAGE_URL = /\/(\d+)\.\w+(?:\?.*)?$/;
+// Currency symbols Cardmarket may render the price in, mapped to their ISO 4217 code.
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  '€': 'EUR',
+  '$': 'USD',
+  '£': 'GBP',
+  'zł': 'PLN',
+  'Kč': 'CZK',
+};
 
 /** A single sprite-sheet icon (set, language or foil), as rendered on Cardmarket via inline `background-image`/`background-position`. */
 export interface SpriteIcon {
@@ -39,13 +47,24 @@ export interface Condition {
   label: string;
 }
 
+/** A normalized offer price, so the UI can format the amount/currency itself instead of parsing display text. */
+export interface Price {
+  amount: number;
+  currency: string;
+}
+
+/** A normalized set reference: the sprite icon, full set name (from Cardmarket), and abbreviation (filled in later from Scryfall data, see `enrichOffersWithScryfallData`). */
+export interface CardSet extends SpriteIcon {
+  code: string | null;
+}
+
 export interface Offer {
   name: string;
   cardUrl: string;
-  priceText: string | null;
+  price: Price | null;
   imageUrl: string | null;
   quantity: string | null;
-  set: SpriteIcon | null;
+  set: CardSet | null;
   language: SpriteIcon | null;
   condition: Condition | null;
   foil: SpriteIcon | null;
@@ -86,6 +105,21 @@ function readImageUrl(row: Element): string | null {
   return readImageUrlFromTooltip(row);
 }
 
+/** Parses Cardmarket's `"1.234,56 €"` format (dot thousands separator, comma decimal separator) into an amount/currency pair. */
+export function parsePrice(priceText: string | null): Price | null {
+  if (!priceText) return null;
+  const symbol = Object.keys(CURRENCY_SYMBOLS).find((s) =>
+    priceText.includes(s),
+  );
+  const currency = symbol ? CURRENCY_SYMBOLS[symbol] : 'EUR';
+  const normalized = priceText
+    .replace(/[^\d,.-]/g, '')
+    .replace(/\./g, '')
+    .replace(',', '.');
+  const amount = parseFloat(normalized);
+  return Number.isNaN(amount) ? null : { amount, currency };
+}
+
 function readText(row: Element, selector: string): string | null {
   const text = row.querySelector(selector)?.textContent?.trim();
   return text ? text : null;
@@ -116,13 +150,15 @@ function readSpriteIcon(el: Element | null): SpriteIcon | null {
   return { ...style, label };
 }
 
-function readSetIcon(attributes: Element | null): SpriteIcon | null {
+function readSetIcon(attributes: Element | null): CardSet | null {
   const link = attributes?.querySelector(SET_LINK_SELECTOR) ?? null;
   // The label lives on the wrapping <a>, the sprite style on its nested <span>.
   const style = readSpriteStyle(link?.querySelector('span') ?? null);
   const label = link?.getAttribute('aria-label')?.trim();
   if (!style || !label) return null;
-  return { ...style, label };
+  // The abbreviation isn't available on Cardmarket's page - it's filled in later
+  // from Scryfall's set code, see `enrichOffersWithScryfallData`.
+  return { ...style, label, code: null };
 }
 
 function readCondition(attributes: Element | null): Condition | null {
@@ -149,7 +185,7 @@ export function parseOffers(table: HTMLElement): Offer[] {
     return {
       name: readText(row, NAME_SELECTOR) ?? '',
       cardUrl: readLink(row, NAME_SELECTOR) ?? '',
-      priceText: readText(row, PRICE_SELECTOR),
+      price: parsePrice(readText(row, PRICE_SELECTOR)),
       imageUrl,
       quantity: readText(row, QUANTITY_SELECTOR),
       set: readSetIcon(attributes),

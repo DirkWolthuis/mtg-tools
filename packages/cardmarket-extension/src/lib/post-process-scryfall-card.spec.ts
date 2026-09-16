@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  computePriceDiffFromAverage,
-  parsePrice,
-} from './post-process-scryfall-card.js';
+import { computePriceDiffFromAverage } from './post-process-scryfall-card.js';
+import { parsePrice } from './parse-offers.js';
 import type { ScryfallCard } from './scryfall.js';
 
 function buildCard(prices: Partial<ScryfallCard['prices']> = {}): ScryfallCard {
@@ -20,35 +18,29 @@ function buildCard(prices: Partial<ScryfallCard['prices']> = {}): ScryfallCard {
   } as ScryfallCard;
 }
 
-describe('parsePrice', () => {
-  it('parses simple decimal-comma prices', () => {
-    expect(parsePrice('0,20 €')).toBe(0.2);
-  });
-
-  it('parses prices with a thousands separator', () => {
-    expect(parsePrice('1.234,56 €')).toBe(1234.56);
-  });
-
-  it('returns null for null input', () => {
-    expect(parsePrice(null)).toBeNull();
-  });
-
-  it('returns null for unparseable input', () => {
-    expect(parsePrice('n/a')).toBeNull();
-  });
-});
-
 describe('computePriceDiffFromAverage', () => {
   it('returns null when there is no scryfallCard', () => {
     expect(
-      computePriceDiffFromAverage({ priceText: '1,00 €', foil: null }, null),
+      computePriceDiffFromAverage(
+        { price: parsePrice('1,00 €'), foil: null },
+        null,
+      ),
     ).toBeNull();
   });
 
-  it('returns null when priceText is missing', () => {
+  it('returns null when price is missing', () => {
     expect(
       computePriceDiffFromAverage(
-        { priceText: null, foil: null },
+        { price: null, foil: null },
+        buildCard({ eur: '1.00' }),
+      ),
+    ).toBeNull();
+  });
+
+  it('returns null when the offer is not priced in EUR', () => {
+    expect(
+      computePriceDiffFromAverage(
+        { price: { amount: 1, currency: 'USD' }, foil: null },
         buildCard({ eur: '1.00' }),
       ),
     ).toBeNull();
@@ -57,7 +49,7 @@ describe('computePriceDiffFromAverage', () => {
   it('returns null when the eur average price is missing', () => {
     expect(
       computePriceDiffFromAverage(
-        { priceText: '1,00 €', foil: null },
+        { price: parsePrice('1,00 €'), foil: null },
         buildCard(),
       ),
     ).toBeNull();
@@ -65,7 +57,7 @@ describe('computePriceDiffFromAverage', () => {
 
   it('computes absolute and percentage diff using eur for non-foil offers', () => {
     const result = computePriceDiffFromAverage(
-      { priceText: '1,50 €', foil: null },
+      { price: parsePrice('1,50 €'), foil: null },
       buildCard({ eur: '1.00' }),
     );
 
@@ -75,7 +67,7 @@ describe('computePriceDiffFromAverage', () => {
   it('uses eur_foil for foil offers', () => {
     const result = computePriceDiffFromAverage(
       {
-        priceText: '3,00 €',
+        price: parsePrice('3,00 €'),
         foil: {
           imageUrl: '',
           position: '',
