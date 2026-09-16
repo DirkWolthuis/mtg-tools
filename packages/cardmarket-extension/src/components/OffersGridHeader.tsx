@@ -24,7 +24,6 @@ export function OffersGridHeader({
   onGapChange,
   showCubeStats,
   onShowCubeStatsChange,
-  isLoading,
 }: OffersGridHeaderProps) {
   return (
     <div
@@ -57,13 +56,6 @@ export function OffersGridHeader({
         </a>
       </div>
       <div className="flex items-center gap-2">
-        {isLoading && (
-          <span
-            className="loading loading-spinner loading-xs text-base-content/60"
-            data-testid="offers-grid-loading-indicator"
-            aria-label="Fetching card details…"
-          />
-        )}
         <OffersSettingsMenu
           gridControlsEnabled={view === 'grid'}
           columns={columns}
