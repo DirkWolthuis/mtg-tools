@@ -9,13 +9,16 @@
   "scripts": {
     "build": "BUILD_ENTRY=content-scripts/seller-offers vite build && BUILD_ENTRY=background/service-worker vite build",
     "dev": "vite --config vite.dev.config.mts",
-    "test": "vitest run --config vitest.config.ts",
-    "test:watch": "vitest --config vitest.config.ts"
+    "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run --config vite.config.mts",
+    "test:watch": "NODE_OPTIONS=--no-experimental-webstorage vitest --config vite.config.mts"
   },
   "dependencies": {
     "@scryfall/api-types": "^1.0.0-alpha.4",
     "preact": "^10.29.8",
-    "vitest": "4.1.10"
+    "vitest": "4.1.10",
+    "vite": "^8.0.0",
+    "@preact/preset-vite": "2.10.6",
+    "@tailwindcss/vite": "4.3.3"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.6",
