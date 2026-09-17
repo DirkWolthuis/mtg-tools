@@ -12,6 +12,8 @@ const GRID_ROOT_ID = 'cardmarket-offers-grid-root';
 async function run(): Promise<void> {
   console.debug(LOG_PREFIX, 'content script injected on', window.location.href);
 
+  const isMagicSeller = window.location.href.includes('/Magic/Users/');
+
   if (document.getElementById(GRID_ROOT_ID)) return; // already rendered
 
   const table = findOffersTable(document);
@@ -45,10 +47,22 @@ async function run(): Promise<void> {
 
   renderOffersGrid(gridRoot, parsedOffers, { isLoading: true, onViewChange });
 
-  const offers = await enrichOffersWithScryfallData(parsedOffers);
+  if (isMagicSeller) {
+    console.debug(
+      LOG_PREFIX,
+      'Magic seller page, starting Scryfall enrichment',
+    );
+    const offers = await enrichOffersWithScryfallData(parsedOffers);
 
-  renderOffersGrid(gridRoot, offers, { isLoading: false, onViewChange });
-  console.debug(LOG_PREFIX, `rendered ${offers.length} offer(s)`);
+    renderOffersGrid(gridRoot, offers, { isLoading: false, onViewChange });
+    console.debug(LOG_PREFIX, `rendered ${offers.length} offer(s)`);
+    return;
+  }
+  console.debug(
+    LOG_PREFIX,
+    'NON Magic seller page, skipping Scryfall enrichment',
+  );
+  renderOffersGrid(gridRoot, parsedOffers, { isLoading: false, onViewChange });
 }
 
 void run();

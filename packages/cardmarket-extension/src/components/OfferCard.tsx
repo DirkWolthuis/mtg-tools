@@ -65,7 +65,8 @@ export function PriceDiff({
 
   return (
     <span
-      className={`badge badge-sm ${diffPositive ? 'badge-error' : 'badge-success'}`}
+      data-tip="Difference from monthly average price based on Scryfall data"
+      className={`tooltip badge badge-sm ${diffPositive ? 'badge-error' : 'badge-success'}`}
     >
       €{` ${diffPositive ? '+' : '-'}${Math.abs(diff.absolute).toFixed(2)} `}
     </span>
@@ -169,7 +170,9 @@ export function OfferCard({ offer, showCubeStats = true }: OfferCardProps) {
 
       <div className="flex flex-1 flex-col">
         <div className="mb-4">
-          <h2 className="text-base font-title font-semibold">{offer.name}</h2>
+          <a className="link link-hover" href={offer.cardUrl}>
+            <h2 className="text-base font-title font-semibold">{offer.name}</h2>
+          </a>
           {offer.price && (
             <div className="mt-2">
               <Price offer={offer} />
