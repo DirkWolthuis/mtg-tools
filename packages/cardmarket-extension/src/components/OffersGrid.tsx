@@ -22,13 +22,6 @@ export function OffersGrid({
   gap,
   showCubeStats,
 }: OffersGridProps) {
-  console.debug(
-    '[cardmarket-offers-grid] rendering offers grid with',
-    offers,
-    'offer(s)',
-    isLoading ? '(loading)' : '',
-  );
-
   if (!isLoading && offers.length === 0) {
     return <p data-testid="offers-grid-empty">No offers found.</p>;
   }
