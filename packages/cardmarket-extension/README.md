@@ -30,19 +30,50 @@ Remaining manual steps before submitting to
 1. Replace the placeholder `browser_specific_settings.gecko.id` in
    `manifests/manifest.firefox.json` with an ID you actually own (a domain
    you control, or a generated UUID in `{...}` form).
-2. Replace the placeholder icons in `public/icons/` with real branded
-   artwork (currently simple generated placeholders).
-3. `public/cube-stats.json` is ~13MB, which trips `web-ext lint`'s
-   `FILE_TOO_LARGE` check (Mozilla's linter can't parse files over 5MB).
-   This doesn't necessarily block submission, but consider slimming the
-   dataset, compressing it, or serving it from a remote endpoint instead of
-   bundling it, before submitting for review.
-4. Because the build output is minified/bundled, AMO requires the
+2. Add real extension icons and reference them from both
+   `public/manifest.json` and `manifests/manifest.firefox.json` (an `icons`
+   map keyed by size, e.g. `16`/`32`/`48`/`128`, pointing at bundled PNGs).
+   Neither manifest currently declares any.
+3. Because the build output is minified/bundled, AMO requires the
    unminified source plus build steps to be submitted for review alongside
    the package (Developer Hub → submission → "Source Code").
-5. Create/verify a Firefox Developer (AMO) account with 2FA, and fill in the
+4. Create/verify a Firefox Developer (AMO) account with 2FA, and fill in the
    store listing (description, screenshots, privacy policy disclosing the
    `api.scryfall.com` network request, and permission justifications).
+5. Mozilla's `data_collection_permissions` manifest key isn't required yet
+   (Firefox 140+ only) — `web-ext lint` surfaces it as a notice, not an
+   error. Add it once it becomes mandatory, bumping
+   `strict_min_version` accordingly if you do.
+6. `web-ext lint` also reports an `UNSAFE_VAR_ASSIGNMENT` ("Unsafe
+   assignment to innerHTML") warning on the bundled content script. This is
+   **not** our code — it's Preact's own reconciler internals (the
+   `dangerouslySetInnerHTML` support in its `diff/props` logic), which is a
+   single, non-tree-shakable code path present in every Preact build. This
+   app never uses `dangerouslySetInnerHTML` anywhere in its own JSX (verified:
+   no matches in `src/`), so the branch is dead code here. Mozilla's own
+   `addons-linter` registers this rule (`no-unsanitized/property`) at
+   *warning*, not *error*, severity precisely because virtually every
+   React/Preact/Vue-based extension trips it — it does not block AMO
+   validation or review (confirmed: `errors: 0` in `lint:firefox` output).
+   The only way to remove it entirely would be to patch Preact's compiled
+   dist files (e.g. via `patch-package`) to strip that branch, which was
+   deliberately not done here: it would add a repo-wide postinstall step
+   that needs manual re-verification on every Preact upgrade, just to
+   silence a warning that has no functional or security impact and is a
+   well-understood false positive to AMO reviewers.
+
+### cube-stats data is sharded, not one big file
+
+`public/cube-stats/<prefix>.json` holds ~258 small shards (one per
+lowercased 2-character Scryfall id prefix, ~50-60KB each) instead of a single
+~13MB `cube-stats.json`. This is required for Firefox: `web-ext lint`/AMO's
+addons-linter treats any non-binary file over 5MB as `FILE_TOO_LARGE` and
+refuses to parse it. The background service worker
+(`cube-stats-cache.ts`) fetches and caches only the shard a given lookup
+needs, so this also avoids loading/parsing the whole dataset on every cold
+start. Regenerate all shards with
+`node --max-old-space-size=8192 scripts/generate-cube-stats.mjs` whenever
+`data/cards/carddict.json` is updated upstream.
 
 ## Running unit tests
 

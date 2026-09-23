@@ -1,10 +1,9 @@
-import { getCubeStats } from '@org/cubecobra-stats';
 import { fetchScryfallCardByCardmarketId } from '../lib/scryfall.js';
 import type {
   FetchScryfallCardMessage,
   FetchScryfallCardResponse,
 } from '../lib/scryfall-messages.js';
-import { getCubeStatsMap } from './cube-stats-cache.js';
+import { getCubeStatsForId } from './cube-stats-cache.js';
 import {
   getCachedScryfallCard,
   setCachedScryfallCard,
@@ -30,11 +29,11 @@ chrome.runtime.onMessage.addListener(
     const cached = getCachedScryfallCard(message.cardmarketId);
     if (cached !== undefined) {
       console.debug(LOG_PREFIX, 'cache hit for', message.cardmarketId, cached);
-      getCubeStatsMap()
+      getCubeStatsForId(cached?.id)
         .then((cubeStats) => {
           sendResponse({
             card: cached,
-            cubeStats: getCubeStats(cached?.id, cubeStats),
+            cubeStats,
           } satisfies FetchScryfallCardResponse);
         })
         .catch((error: unknown) => {
@@ -58,7 +57,7 @@ chrome.runtime.onMessage.addListener(
         setCachedScryfallCard(message.cardmarketId, card);
         // Only delay for actual network fetches, not cache hits.
         await delay(REQUEST_DELAY_MS);
-        const cubeStats = getCubeStats(card?.id, await getCubeStatsMap());
+        const cubeStats = await getCubeStatsForId(card?.id);
         sendResponse({ card, cubeStats } satisfies FetchScryfallCardResponse);
       })
       .catch((error: unknown) => {
