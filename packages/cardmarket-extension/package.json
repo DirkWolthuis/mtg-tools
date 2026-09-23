@@ -8,17 +8,21 @@
   },
   "scripts": {
     "build": "BUILD_ENTRY=content-scripts/seller-offers vite build && BUILD_ENTRY=background/service-worker vite build",
+    "build:firefox": "npm run build && node scripts/select-manifest.mjs firefox",
     "dev": "vite --config vite.dev.config.mts",
     "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run --config vite.config.mts",
-    "test:watch": "NODE_OPTIONS=--no-experimental-webstorage vitest --config vite.config.mts"
+    "test:watch": "NODE_OPTIONS=--no-experimental-webstorage vitest --config vite.config.mts",
+    "package:chrome": "npm run build && web-ext build --source-dir dist --artifacts-dir dist-packages --filename cardmarket-offers-grid-chrome-{version}.zip --overwrite-dest",
+    "package:firefox": "npm run build:firefox && web-ext build --source-dir dist --artifacts-dir dist-packages --filename cardmarket-offers-grid-firefox-{version}.zip --overwrite-dest",
+    "lint:firefox": "npm run build:firefox && web-ext lint --source-dir dist --self-hosted"
   },
   "dependencies": {
-    "@scryfall/api-types": "^1.0.0-alpha.4",
-    "preact": "^10.29.8",
-    "vitest": "4.1.10",
-    "vite": "^8.0.0",
     "@preact/preset-vite": "2.10.6",
-    "@tailwindcss/vite": "4.3.3"
+    "@scryfall/api-types": "^1.0.0-alpha.4",
+    "@tailwindcss/vite": "4.3.3",
+    "preact": "^10.29.8",
+    "vite": "^8.0.0",
+    "vitest": "4.1.10"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.6",
@@ -26,6 +30,7 @@
     "@types/chrome": "^0.0.323",
     "daisyui": "^5.7.37",
     "jsdom": "^25.0.1",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "web-ext": "^8.10.0"
   }
 }
