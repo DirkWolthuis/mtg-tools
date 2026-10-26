@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { extractCubeId, fetchCubeJson } from './cubecobra-api.js';
+import { cubeCobraCardLink, extractCubeId, fetchCubeJson } from './cubecobra-api.js';
 
 describe('extractCubeId', () => {
   it('extracts the id from a /cube/list/ URL', () => {
@@ -37,6 +37,20 @@ describe('extractCubeId', () => {
   it('returns null for empty input', () => {
     expect(extractCubeId('')).toBeNull();
     expect(extractCubeId('   ')).toBeNull();
+  });
+});
+
+describe('cubeCobraCardLink', () => {
+  it('builds a /tool/card/:name URL, URL-encoding the card name', () => {
+    expect(cubeCobraCardLink('Lightning Bolt')).toBe(
+      'https://cubecobra.com/tool/card/Lightning%20Bolt',
+    );
+  });
+
+  it('encodes special characters like slashes in split card names', () => {
+    expect(cubeCobraCardLink('Fire // Ice')).toBe(
+      'https://cubecobra.com/tool/card/Fire%20%2F%2F%20Ice',
+    );
   });
 });
 

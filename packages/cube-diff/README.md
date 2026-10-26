@@ -13,6 +13,9 @@ a past date - showing the cards that were added and cut as an image grid, with a
   Scryfall oracle ID (so a reprint of the same card isn't shown as both a cut and an add).
 - The cube link/ID and date are mirrored into the page URL (`?cube=...&date=...`) so the comparison can be bookmarked
   or shared; opening a shared link re-runs the diff automatically.
+- Card tiles link out to the card's CubeCobra page, zoom in on hover, and show both faces for transform/modal-DFC
+  cards. The number of cards per row is configurable (responsive "auto", or a fixed count).
+- The diff can be exported as a plain-text file listing added/cut card names.
 
 ## Development
 

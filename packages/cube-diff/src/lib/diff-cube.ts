@@ -7,6 +7,8 @@ export interface DiffCard {
   count: number;
   imageNormal?: string;
   imageSmall?: string;
+  /** Back-face image for transform/modal-DFC cards; undefined for single-faced cards. */
+  imageFlip?: string;
   scryfallId?: string;
 }
 
@@ -62,6 +64,7 @@ function toDiffCard(key: string, card: CubeJsonCard, count: number): DiffCard {
     count,
     imageNormal: card.details?.image_normal,
     imageSmall: card.details?.image_small,
+    imageFlip: card.details?.image_flip,
     scryfallId: card.details?.scryfall_id,
   };
 }
