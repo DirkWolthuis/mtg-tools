@@ -1,7 +1,10 @@
 /** Parsed shareable state for the cube diff page, mirrored to/from the URL's query string. */
 export interface DiffUrlState {
   cube: string;
-  /** Date in `YYYY-MM-DD` form, as used by `<input type="date">`. */
+  /**
+   * Date in ISO (`YYYY-MM-DD`) form. The form displays/accepts this as Dutch `dd-mm-yyyy` (see
+   * `dutch-date.ts`), but it's kept as ISO here for unambiguous URL sharing and API calls.
+   */
   date: string;
 }
 

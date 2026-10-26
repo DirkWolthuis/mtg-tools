@@ -16,6 +16,8 @@ export interface CubeJsonCard {
     scryfall_id?: string;
     image_normal?: string;
     image_small?: string;
+    /** Back-face image (e.g. transform/modal-DFC cards); absent for single-faced cards. */
+    image_flip?: string;
     type?: string;
   };
 }
@@ -54,6 +56,11 @@ export function extractCubeId(input: string): string | null {
   if (/^[^\s/]+$/.test(trimmed)) return trimmed;
 
   return null;
+}
+
+/** Builds a link to a card's CubeCobra card-info page, used to let diff tiles link out to CubeCobra. */
+export function cubeCobraCardLink(cardName: string): string {
+  return `https://cubecobra.com/tool/card/${encodeURIComponent(cardName)}`;
 }
 
 /** Fetches a cube's full JSON from CubeCobra, optionally as it existed at the nearest changelog on or before `date`. */

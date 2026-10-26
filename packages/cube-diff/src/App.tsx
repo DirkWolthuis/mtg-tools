@@ -3,7 +3,9 @@ import {
   CubeDiffForm,
   type CubeDiffFormValues,
 } from './components/CubeDiffForm.js';
-import { DiffGrid } from './components/DiffGrid.js';
+import { DiffGrid, type CardsPerRow } from './components/DiffGrid.js';
+import { ExportButton } from './components/ExportButton.js';
+import { GridSettings } from './components/GridSettings.js';
 import { ShareLink } from './components/ShareLink.js';
 import { extractCubeId, fetchCubeJson } from './lib/cubecobra-api.js';
 import { diffCubes, type CubeDiff } from './lib/diff-cube.js';
@@ -39,6 +41,15 @@ function initialFormValues(): CubeDiffFormValues {
   return { cube: fromUrl.cube ?? '', date: fromUrl.date ?? '' };
 }
 
+const CARDS_PER_ROW_STORAGE_KEY = 'cube-diff:cardsPerRow';
+
+/** Reads the persisted cards-per-row preference, defaulting to the responsive "auto" layout. */
+function initialCardsPerRow(): CardsPerRow {
+  const stored = window.localStorage.getItem(CARDS_PER_ROW_STORAGE_KEY);
+  const parsed = stored ? Number(stored) : NaN;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 'auto';
+}
+
 /** Fetches both cube snapshots (current + as of `date`) from CubeCobra and diffs them. */
 async function loadDiff(
   cubeId: string,
@@ -60,6 +71,8 @@ export function App() {
   const [formValues, setFormValues] =
     useState<CubeDiffFormValues>(initialFormValues);
   const [state, setState] = useState<LoadState>({ status: 'idle' });
+  const [cardsPerRow, setCardsPerRow] =
+    useState<CardsPerRow>(initialCardsPerRow);
   // A `?share=...` link is a self-contained, read-only snapshot - it takes priority over any
   // `cube`/`date` params and is re-derived from the URL on every render (no need for state).
   const shareState = parseShareUrlState(window.location.search);
@@ -108,6 +121,16 @@ export function App() {
         message:
           error instanceof Error ? error.message : 'Something went wrong.',
       });
+    }
+  }
+
+  /** Updates the cards-per-row preference and persists it (clearing storage back to "auto"). */
+  function changeCardsPerRow(value: CardsPerRow) {
+    setCardsPerRow(value);
+    if (value === 'auto') {
+      window.localStorage.removeItem(CARDS_PER_ROW_STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(CARDS_PER_ROW_STORAGE_KEY, String(value));
     }
   }
 
@@ -185,17 +208,29 @@ export function App() {
 
       {state.status === 'success' && (
         <>
-          <h2 className="text-3xl font-semibold">
-            <a
-              href={state.cubeLink}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:underline"
-            >
-              {state.cubeName}
-            </a>
-          </h2>
-          <DiffGrid added={state.diff.added} cut={state.diff.cut} />
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="text-3xl font-semibold">
+              <a
+                href={state.cubeLink}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline"
+              >
+                {state.cubeName}
+              </a>
+            </h2>
+            <ExportButton
+              diff={state.diff}
+              cubeName={state.cubeName}
+              date={state.date}
+            />
+          </div>
+          <GridSettings cardsPerRow={cardsPerRow} onChange={changeCardsPerRow} />
+          <DiffGrid
+            added={state.diff.added}
+            cut={state.diff.cut}
+            cardsPerRow={cardsPerRow}
+          />
         </>
       )}
     </div>
