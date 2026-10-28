@@ -33,3 +33,23 @@ export function computePriceDiffFromAverage(
   };
 }
 
+/**
+ * Returns the best grid-display image for a Scryfall card: its own
+ * `image_uris` for single-faced cards, or the front face's for multi-faced
+ * ones (`card_faces[0]`). Returns `null` if Scryfall has no image at all
+ * (e.g. a newly-spoiled card).
+ */
+export function getScryfallImageUrl(card: ScryfallCard | null): string | null {
+  if (!card) return null;
+  if ('image_uris' in card && card.image_uris) {
+    return card.image_uris.normal ?? card.image_uris.large ?? null;
+  }
+  if ('card_faces' in card) {
+    const front = card.card_faces[0];
+    if (front && 'image_uris' in front && front.image_uris) {
+      return front.image_uris.normal ?? front.image_uris.large ?? null;
+    }
+  }
+  return null;
+}
+

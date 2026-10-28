@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { computePriceDiffFromAverage } from './post-process-scryfall-card.js';
+import {
+  computePriceDiffFromAverage,
+  getScryfallImageUrl,
+} from './post-process-scryfall-card.js';
 import { parsePrice } from './parse-offers.js';
 import type { ScryfallCard } from './scryfall.js';
 
@@ -80,5 +83,47 @@ describe('computePriceDiffFromAverage', () => {
     );
 
     expect(result).toEqual({ absolute: 1, percentage: 0.5 });
+  });
+});
+
+describe('getScryfallImageUrl', () => {
+  it('returns null when there is no card', () => {
+    expect(getScryfallImageUrl(null)).toBeNull();
+  });
+
+  it("returns the card's own image for single-faced cards", () => {
+    const card = {
+      object: 'card',
+      image_uris: { normal: 'https://example.com/normal.jpg' },
+    } as unknown as ScryfallCard;
+
+    expect(getScryfallImageUrl(card)).toBe('https://example.com/normal.jpg');
+  });
+
+  it('falls back to the large image when normal is missing', () => {
+    const card = {
+      object: 'card',
+      image_uris: { large: 'https://example.com/large.jpg' },
+    } as unknown as ScryfallCard;
+
+    expect(getScryfallImageUrl(card)).toBe('https://example.com/large.jpg');
+  });
+
+  it("uses the front face's image for multi-faced cards", () => {
+    const card = {
+      object: 'card',
+      card_faces: [
+        { image_uris: { normal: 'https://example.com/front.jpg' } },
+        { image_uris: { normal: 'https://example.com/back.jpg' } },
+      ],
+    } as unknown as ScryfallCard;
+
+    expect(getScryfallImageUrl(card)).toBe('https://example.com/front.jpg');
+  });
+
+  it('returns null when neither the card nor its faces have an image', () => {
+    const card = { object: 'card' } as unknown as ScryfallCard;
+
+    expect(getScryfallImageUrl(card)).toBeNull();
   });
 });

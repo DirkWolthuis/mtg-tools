@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
-import { fetchScryfallCardByCardmarketId } from './scryfall.js';
+import { fetchScryfallCardByCardmarketId, fetchScryfallCardPrint } from './scryfall.js';
 
 describe('fetchScryfallCardByCardmarketId', () => {
   afterEach(() => {
@@ -33,6 +33,39 @@ describe('fetchScryfallCardByCardmarketId', () => {
     );
 
     const result = await fetchScryfallCardByCardmarketId('0');
+
+    expect(result).toBeNull();
+  });
+});
+
+describe('fetchScryfallCardPrint', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('returns the parsed JSON body on a successful response', async () => {
+    const card = { object: 'card', lang: 'de', name: 'Akademie-Sceada' };
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(card),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await fetchScryfallCardPrint('dom', '40', 'de');
+
+    expect(result).toEqual(card);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.scryfall.com/cards/dom/40/de',
+    );
+  });
+
+  it('returns null when the response is not ok', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: false, json: () => Promise.resolve({}) }),
+    );
+
+    const result = await fetchScryfallCardPrint('dom', '40', 'de');
 
     expect(result).toBeNull();
   });

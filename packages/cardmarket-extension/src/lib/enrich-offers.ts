@@ -12,14 +12,17 @@ const LOG_PREFIX = '[cardmarket-offers-grid:enrich]';
 interface ScryfallCardLookup {
   card: ScryfallCard | null;
   cubeStats: CubeStats | null;
+  imageUrl: string | null;
 }
 
 function requestScryfallCard(
   cardmarketId: string,
+  language: string | null,
 ): Promise<ScryfallCardLookup> {
   const message: FetchScryfallCardMessage = {
     type: 'fetch-scryfall-card',
     cardmarketId,
+    language,
   };
   return new Promise((resolve) => {
     chrome.runtime.sendMessage(
@@ -33,12 +36,13 @@ function requestScryfallCard(
             'sendMessage failed',
             chrome.runtime.lastError.message,
           );
-          resolve({ card: null, cubeStats: null });
+          resolve({ card: null, cubeStats: null, imageUrl: null });
           return;
         }
         resolve({
           card: response?.card ?? null,
           cubeStats: response?.cubeStats ?? null,
+          imageUrl: response?.imageUrl ?? null,
         });
       },
     );
@@ -70,9 +74,8 @@ export async function enrichOffersWithScryfallData(
       'requesting scryfall card for cardmarketId',
       offer.cardmarketId,
     );
-    const { card: scryfallCard, cubeStats } = await requestScryfallCard(
-      offer.cardmarketId,
-    );
+    const { card: scryfallCard, cubeStats, imageUrl } =
+      await requestScryfallCard(offer.cardmarketId, offer.language?.label ?? null);
     console.debug(
       LOG_PREFIX,
       'received scryfall card for cardmarketId',
@@ -92,6 +95,9 @@ export async function enrichOffersWithScryfallData(
     enriched.push({
       ...offer,
       set,
+      // Scryfall's own (language-matched) image replaces Cardmarket's low-res
+      // thumbnail; fall back to that thumbnail if Scryfall has no image.
+      imageUrl: imageUrl ?? offer.imageUrl,
       scryfallCard,
       priceDiffFromAverage,
       cubeStats,

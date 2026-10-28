@@ -75,7 +75,7 @@ describe('enrichOffersWithScryfallData', () => {
       }),
     ]);
     expect(sendMessage).toHaveBeenCalledWith(
-      { type: 'fetch-scryfall-card', cardmarketId: '379041' },
+      { type: 'fetch-scryfall-card', cardmarketId: '379041', language: null },
       expect.any(Function),
     );
   });
@@ -136,5 +136,89 @@ describe('enrichOffersWithScryfallData', () => {
     const result = await promise;
 
     expect(result[0]?.cubeStats).toEqual(cubeStats);
+  });
+
+  it("replaces the Cardmarket thumbnail with the background's Scryfall image", async () => {
+    const sendMessage = vi.fn(
+      (
+        _message: unknown,
+        callback: (response: { imageUrl: unknown }) => void,
+      ) => {
+        callback({ imageUrl: 'https://cards.scryfall.io/normal/front.jpg' });
+      },
+    );
+    vi.stubGlobal('chrome', { runtime: { sendMessage } });
+
+    const promise = enrichOffersWithScryfallData([
+      buildOffer({
+        cardmarketId: '379041',
+        imageUrl: 'https://static.cardmarket.com/thumb.jpg',
+      }),
+    ]);
+    await vi.runAllTimersAsync();
+    const result = await promise;
+
+    expect(result[0]?.imageUrl).toBe(
+      'https://cards.scryfall.io/normal/front.jpg',
+    );
+  });
+
+  it("falls back to the Cardmarket thumbnail when Scryfall has no image", async () => {
+    const sendMessage = vi.fn(
+      (
+        _message: unknown,
+        callback: (response: { imageUrl: unknown }) => void,
+      ) => {
+        callback({ imageUrl: null });
+      },
+    );
+    vi.stubGlobal('chrome', { runtime: { sendMessage } });
+
+    const promise = enrichOffersWithScryfallData([
+      buildOffer({
+        cardmarketId: '379041',
+        imageUrl: 'https://static.cardmarket.com/thumb.jpg',
+      }),
+    ]);
+    await vi.runAllTimersAsync();
+    const result = await promise;
+
+    expect(result[0]?.imageUrl).toBe('https://static.cardmarket.com/thumb.jpg');
+  });
+
+  it("sends the offer's language label so the background can resolve a language-matched image", async () => {
+    const sendMessage = vi.fn(
+      (
+        _message: unknown,
+        callback: (response: { imageUrl: unknown }) => void,
+      ) => {
+        callback({ imageUrl: null });
+      },
+    );
+    vi.stubGlobal('chrome', { runtime: { sendMessage } });
+
+    const promise = enrichOffersWithScryfallData([
+      buildOffer({
+        cardmarketId: '379041',
+        language: {
+          imageUrl: '//static.cardmarket.com/img/ssMain2.png',
+          position: '-80px -0px',
+          width: '16px',
+          height: '16px',
+          label: 'German',
+        },
+      }),
+    ]);
+    await vi.runAllTimersAsync();
+    await promise;
+
+    expect(sendMessage).toHaveBeenCalledWith(
+      {
+        type: 'fetch-scryfall-card',
+        cardmarketId: '379041',
+        language: 'German',
+      },
+      expect.any(Function),
+    );
   });
 });

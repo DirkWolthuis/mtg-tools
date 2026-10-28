@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   getCachedScryfallCard,
+  getCachedScryfallPrint,
   setCachedScryfallCard,
+  setCachedScryfallPrint,
 } from './scryfall-cache.js';
 
 const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
@@ -47,5 +49,40 @@ describe('scryfall-cache', () => {
 
     expect(getCachedScryfallCard('id-a', 1000)).toEqual({ object: 'a' });
     expect(getCachedScryfallCard('id-b', 1000)).toEqual({ object: 'b' });
+  });
+});
+
+describe('scryfall print cache', () => {
+  it('is a miss when nothing has been cached', () => {
+    expect(getCachedScryfallPrint('dom', '40', 'de')).toBeUndefined();
+  });
+
+  it('returns a fresh cached print', () => {
+    const card = { object: 'card', lang: 'de' } as any;
+    setCachedScryfallPrint('dom', '40', 'de', card, 1000);
+
+    expect(getCachedScryfallPrint('dom', '40', 'de', 1000 + 60_000)).toBe(
+      card,
+    );
+  });
+
+  it('treats an entry past the 2-day TTL as expired', () => {
+    setCachedScryfallPrint('dom', '40', 'de', {} as any, 1000);
+
+    expect(
+      getCachedScryfallPrint('dom', '40', 'de', 1000 + TWO_DAYS_MS),
+    ).toBeUndefined();
+  });
+
+  it('keys entries independently per set/collector number/language', () => {
+    setCachedScryfallPrint('dom', '40', 'de', { object: 'de' } as any, 1000);
+    setCachedScryfallPrint('dom', '40', 'fr', { object: 'fr' } as any, 1000);
+
+    expect(getCachedScryfallPrint('dom', '40', 'de', 1000)).toEqual({
+      object: 'de',
+    });
+    expect(getCachedScryfallPrint('dom', '40', 'fr', 1000)).toEqual({
+      object: 'fr',
+    });
   });
 });

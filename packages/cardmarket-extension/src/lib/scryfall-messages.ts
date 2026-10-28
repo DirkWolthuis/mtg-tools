@@ -10,9 +10,15 @@ import type { ScryfallCard } from './scryfall.js';
 export interface FetchScryfallCardMessage {
   type: 'fetch-scryfall-card';
   cardmarketId: string;
+  /** The offer's language sprite label (e.g. `"German"`), if any - used to fetch
+   * that specific language's print image instead of the card's default one. */
+  language: string | null;
 }
 
 export interface FetchScryfallCardResponse {
   card: ScryfallCard | null;
   cubeStats: CubeStats | null;
+  /** Best-available grid image for the offer: the requested language's print
+   * image when found, otherwise `card`'s own image, otherwise `null`. */
+  imageUrl: string | null;
 }
